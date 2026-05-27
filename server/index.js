@@ -1,0 +1,29 @@
+import express from 'express'
+import cors from 'cors'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import authRoutes from './routes/auth.js'
+import photoRoutes from './routes/photos.js'
+import pageRoutes from './routes/pages.js'
+import adminRoutes from './routes/admin.js'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const app = express()
+const PORT = process.env.API_PORT || 3001
+
+app.use(cors({ origin: true, credentials: true }))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))
+
+app.use('/api/auth', authRoutes)
+app.use('/api/photos', photoRoutes)
+app.use('/api/pages', pageRoutes)
+app.use('/api/admin', adminRoutes)
+
+app.get('/api/health', (req, res) => res.json({ ok: true }))
+
+app.listen(PORT, 'localhost', () => {
+  console.log(`API server running on http://localhost:${PORT}`)
+})

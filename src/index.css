@@ -1,12 +1,23 @@
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #1a56db;
+  --color-primary-dark: #1e429f;
+  --color-accent: #f59e0b;
+  --font-sans: 'Inter', system-ui, sans-serif;
 }
 
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-  font-family: 'Georgia', serif;
-  background: #f5f0e8;
-  color: #2c2c2c;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
   min-height: 100vh;
+}
+
+.glass {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.3);
 }
