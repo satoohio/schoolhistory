@@ -1,23 +1,224 @@
 @import "tailwindcss";
 
-@theme {
-  --color-primary: #1a56db;
-  --color-primary-dark: #1e429f;
-  --color-accent: #f59e0b;
-  --font-sans: 'Inter', system-ui, sans-serif;
+/* ─── Layout helpers ─────────────────────────────────────── */
+.wrap {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 24px;
+  padding-right: 24px;
 }
 
+.wrap-sm {
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* ─── Page headers ───────────────────────────────────────── */
+.page-hero {
+  padding: 72px 0 64px;
+  text-align: center;
+  color: #fff;
+}
+
+.page-hero h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+}
+
+.page-hero p {
+  font-size: 1.05rem;
+  opacity: 0.8;
+}
+
+/* ─── Cards ──────────────────────────────────────────────── */
+.card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+}
+
+/* ─── Buttons ────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #1d4ed8;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: #1e40af; transform: translateY(-1px); }
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.95rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.3);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.btn-outline:hover { background: rgba(255,255,255,0.22); }
+
+/* ─── Form inputs ────────────────────────────────────────── */
+.input {
+  width: 100%;
+  padding: 10px 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #1e293b;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+}
+
+textarea.input { resize: none; }
+
+/* ─── Stat cards ─────────────────────────────────────────── */
+.stat-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px 16px;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  border: 1px solid #f1f5f9;
+}
+
+/* ─── Gallery grid ───────────────────────────────────────── */
+.photo-grid {
+  columns: 2;
+  column-gap: 14px;
+}
+@media (min-width: 640px) { .photo-grid { columns: 3; } }
+@media (min-width: 1024px) { .photo-grid { columns: 4; } }
+
+.photo-item {
+  break-inside: avoid;
+  margin-bottom: 14px;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+}
+
+.photo-item img {
+  width: 100%;
+  display: block;
+  transition: transform 0.4s;
+}
+.photo-item:hover img { transform: scale(1.04); }
+
+.photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%);
+  opacity: 0;
+  transition: opacity 0.25s;
+  border-radius: 14px;
+}
+.photo-item:hover .photo-overlay { opacity: 1; }
+
+/* ─── Badge ──────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ─── Section spacing ────────────────────────────────────── */
+.section { padding: 64px 0; }
+.section-sm { padding: 40px 0; }
+
+/* ─── Tag filter ─────────────────────────────────────────── */
+.filter-btn {
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 0.83rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid #e2e8f0;
+  background: #fff;
+  color: #475569;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.filter-btn:hover { border-color: #3b82f6; color: #1d4ed8; }
+.filter-btn.active { background: #1d4ed8; color: #fff; border-color: #1d4ed8; }
+
+/* ─── Admin tab ──────────────────────────────────────────── */
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.tab-btn:hover { background: #f1f5f9; }
+.tab-btn.active { background: #1d4ed8; color: #fff; }
+
+/* ─── Global base ────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: #f8fafc;
   color: #1e293b;
-  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
-.glass {
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.3);
+a { color: inherit; text-decoration: none; }
+
+img { display: block; max-width: 100%; }
+
+/* ─── Animations ─────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.5s ease both; }
+
+/* ─── Responsive wrap ────────────────────────────────────── */
+@media (max-width: 640px) {
+  .wrap, .wrap-sm { padding-left: 16px; padding-right: 16px; }
+  .page-hero h1 { font-size: 1.75rem; }
+  .section { padding: 40px 0; }
 }

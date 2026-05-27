@@ -1,72 +1,74 @@
-import { useState, useEffect } from 'react'
 import { MapPin, Phone, Mail, Clock } from 'lucide-react'
 
 export default function Contacts() {
-  const [page, setPage] = useState(null)
-
-  useEffect(() => {
-    fetch('/api/pages/contacts').then(r => r.ok ? r.json() : null).then(d => d && setPage(d))
-  }, [])
-
   const info = [
-    { icon: MapPin, label: 'Адрес', value: 'г. Москва, ул. Школьная, д. 1' },
-    { icon: Phone, label: 'Телефон', value: '+7 (495) 000-00-00' },
-    { icon: Mail, label: 'Email', value: 'school@example.ru' },
-    { icon: Clock, label: 'Режим работы', value: 'Пн–Пт: 8:00 – 18:00' },
+    { icon: MapPin, label: 'Адрес', value: 'г. Москва, ул. Школьная, д. 1', color: '#3b82f6', bg: '#eff6ff' },
+    { icon: Phone, label: 'Телефон', value: '+7 (495) 000-00-00', color: '#10b981', bg: '#ecfdf5' },
+    { icon: Mail, label: 'Email', value: 'school@example.ru', color: '#8b5cf6', bg: '#f5f3ff' },
+    { icon: Clock, label: 'Режим работы', value: 'Пн–Пт: 8:00 – 18:00', color: '#f59e0b', bg: '#fffbeb' },
   ]
 
   return (
-    <div className="pt-16 min-h-screen">
-      <div className="bg-gradient-to-br from-teal-700 to-blue-800 text-white py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h1 className="text-4xl font-bold mb-3">Контакты</h1>
-          <p className="text-teal-100">Мы всегда рады помочь и ответить на ваши вопросы</p>
+    <div style={{ paddingTop: 64, minHeight: '100vh' }}>
+
+      {/* Header */}
+      <div style={{ background: 'linear-gradient(135deg, #0f4c75 0%, #1b6ca8 100%)', padding: '64px 0 60px' }}>
+        <div className="wrap" style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#7dd3fc', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Мы всегда на связи</div>
+          <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', marginBottom: 12 }}>Контакты</h1>
+          <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '1rem' }}>Ответим на все ваши вопросы</p>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-14">
-        <div className="grid sm:grid-cols-2 gap-6 mb-10">
-          {info.map(({ icon: Icon, label, value }) => (
-            <div key={label} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-start gap-4 hover:shadow-md transition-shadow">
-              <div className="w-11 h-11 bg-teal-50 rounded-xl flex items-center justify-center shrink-0">
-                <Icon size={20} className="text-teal-700" />
+      <div className="wrap-sm" style={{ padding: '56px 24px 72px' }}>
+
+        {/* Info cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14, marginBottom: 40 }} className="contacts-grid">
+          {info.map(({ icon: Icon, label, value, color, bg }) => (
+            <div key={label} className="card" style={{ padding: '24px', display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+              <div style={{ width: 44, height: 44, background: bg, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Icon size={20} color={color} />
               </div>
               <div>
-                <p className="text-xs text-slate-400 font-medium uppercase tracking-wide mb-1">{label}</p>
-                <p className="text-slate-800 font-medium">{value}</p>
+                <div style={{ fontSize: '0.73rem', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>{label}</div>
+                <div style={{ fontWeight: 600, color: '#1e293b', fontSize: '0.95rem' }}>{value}</div>
               </div>
             </div>
           ))}
         </div>
 
         {/* Contact form */}
-        <div className="bg-white rounded-3xl shadow-sm p-8 border border-slate-100">
-          <h2 className="text-xl font-bold text-slate-800 mb-6">Написать нам</h2>
-          <form className="space-y-4" onSubmit={e => { e.preventDefault(); alert('Сообщение отправлено!') }}>
-            <div className="grid sm:grid-cols-2 gap-4">
+        <div className="card" style={{ padding: '36px 40px' }}>
+          <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#0f172a', marginBottom: 24 }}>Написать нам</h2>
+          <form style={{ display: 'flex', flexDirection: 'column', gap: 18 }}
+            onSubmit={e => { e.preventDefault(); alert('Сообщение отправлено!') }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="form-row">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Ваше имя</label>
-                <input type="text" placeholder="Иван Иванов" required
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#374151', marginBottom: 7 }}>Ваше имя</label>
+                <input type="text" placeholder="Иван Иванов" required className="input" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
-                <input type="email" placeholder="ivan@example.ru" required
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#374151', marginBottom: 7 }}>Email</label>
+                <input type="email" placeholder="ivan@example.ru" required className="input" />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Сообщение</label>
-              <textarea rows={4} placeholder="Ваш вопрос..." required
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#374151', marginBottom: 7 }}>Сообщение</label>
+              <textarea rows={5} placeholder="Ваш вопрос или предложение..." required className="input" />
             </div>
-            <button type="submit"
-              className="px-6 py-2.5 bg-blue-700 text-white font-medium rounded-xl hover:bg-blue-800 transition-colors text-sm">
-              Отправить
-            </button>
+            <div>
+              <button type="submit" className="btn-primary">Отправить сообщение</button>
+            </div>
           </form>
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 640px) {
+          .contacts-grid { grid-template-columns: 1fr !important; }
+          .form-row { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   )
 }

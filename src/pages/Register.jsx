@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { GraduationCap, Eye, EyeOff } from 'lucide-react'
+import { GraduationCap, Eye, EyeOff, UserPlus } from 'lucide-react'
 
 export default function Register() {
   const { login } = useAuth()
@@ -20,7 +20,7 @@ export default function Register() {
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: form.name, email: form.email, password: form.password })
+        body: JSON.stringify({ name: form.name, email: form.email, password: form.password }),
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Ошибка регистрации'); return }
@@ -31,63 +31,61 @@ export default function Register() {
   }
 
   return (
-    <div className="pt-16 min-h-screen flex items-center justify-center bg-slate-50 px-4 py-10">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <GraduationCap size={28} className="text-white" />
+    <div style={{ paddingTop: 64, minHeight: '100vh', background: 'linear-gradient(135deg, #f0f4ff 0%, #fafbff 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 16px' }}>
+      <div style={{ width: '100%', maxWidth: 420 }}>
+
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <div style={{ width: 56, height: 56, background: 'linear-gradient(135deg, #1d4ed8, #4f46e5)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '0 8px 24px rgba(29,78,216,0.3)' }}>
+            <GraduationCap size={26} color="#fff" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-800">Регистрация</h1>
-          <p className="text-slate-500 text-sm mt-1">Создайте аккаунт для доступа к галерее</p>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', marginBottom: 6 }}>Создать аккаунт</h1>
+          <p style={{ color: '#64748b', fontSize: '0.9rem' }}>Регистрация для доступа к галерее</p>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-md p-8 border border-slate-100">
+        <div className="card" style={{ padding: '36px 32px' }}>
           {error && (
-            <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">{error}</div>
+            <div style={{ marginBottom: 18, padding: '12px 16px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10, color: '#dc2626', fontSize: '0.875rem' }}>{error}</div>
           )}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Ваше имя</label>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#374151', marginBottom: 7 }}>Ваше имя</label>
               <input type="text" required value={form.name}
                 onChange={e => setForm({ ...form, name: e.target.value })}
-                placeholder="Иван Иванов"
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                placeholder="Иван Иванов" className="input" autoComplete="name" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#374151', marginBottom: 7 }}>Email</label>
               <input type="email" required value={form.email}
                 onChange={e => setForm({ ...form, email: e.target.value })}
-                placeholder="your@email.ru"
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                placeholder="your@email.ru" className="input" autoComplete="email" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Пароль</label>
-              <div className="relative">
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#374151', marginBottom: 7 }}>Пароль</label>
+              <div style={{ position: 'relative' }}>
                 <input type={showPwd ? 'text' : 'password'} required value={form.password}
                   onChange={e => setForm({ ...form, password: e.target.value })}
-                  placeholder="Минимум 6 символов"
-                  className="w-full px-4 py-2.5 pr-11 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  placeholder="Минимум 6 символов" className="input"
+                  style={{ paddingRight: 44 }} autoComplete="new-password" />
                 <button type="button" onClick={() => setShowPwd(!showPwd)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                  style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8' }}>
                   {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Подтвердите пароль</label>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#374151', marginBottom: 7 }}>Подтвердите пароль</label>
               <input type="password" required value={form.confirm}
                 onChange={e => setForm({ ...form, confirm: e.target.value })}
-                placeholder="Повторите пароль"
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                placeholder="Повторите пароль" className="input" autoComplete="new-password" />
             </div>
-            <button type="submit" disabled={loading}
-              className="w-full py-3 bg-blue-700 text-white font-semibold rounded-xl hover:bg-blue-800 transition-colors disabled:opacity-60 mt-2">
-              {loading ? 'Регистрируем...' : 'Создать аккаунт'}
+            <button type="submit" disabled={loading} className="btn-primary"
+              style={{ width: '100%', justifyContent: 'center', marginTop: 6, padding: '13px', fontSize: '0.95rem', opacity: loading ? 0.7 : 1 }}>
+              <UserPlus size={17} /> {loading ? 'Создаём аккаунт...' : 'Зарегистрироваться'}
             </button>
           </form>
-          <p className="text-center text-sm text-slate-500 mt-6">
+          <p style={{ textAlign: 'center', fontSize: '0.875rem', color: '#64748b', marginTop: 20 }}>
             Уже есть аккаунт?{' '}
-            <Link to="/login" className="text-blue-700 font-medium hover:underline">Войти</Link>
+            <Link to="/login" style={{ color: '#1d4ed8', fontWeight: 600 }}>Войти</Link>
           </p>
         </div>
       </div>
