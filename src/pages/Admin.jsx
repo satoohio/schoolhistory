@@ -1,15 +1,54 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Upload, Trash2, Users, Images, LayoutGrid, FileText, Plus, X, Star, StarOff, Settings } from 'lucide-react'
+import {
+  Upload, Trash2, Users, Images, LayoutGrid,
+  FileText, Plus, X, Star, StarOff, Settings, Save
+} from 'lucide-react'
 
-function TabBtn({ active, onClick, icon: Icon, children }) {
+const S = {
+  card: { background: '#fff', border: '1px solid #e2e8f0', borderRadius: 16, overflow: 'hidden' },
+  label: { display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#374151', marginBottom: 7 },
+  input: {
+    width: '100%', padding: '10px 14px', border: '1.5px solid #e2e8f0', borderRadius: 10,
+    fontSize: '0.875rem', color: '#1e293b', background: '#fff', outline: 'none',
+    boxSizing: 'border-box',
+  },
+  btnPrimary: {
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+    padding: '10px 20px', background: '#1d4ed8', color: '#fff', fontWeight: 600,
+    fontSize: '0.875rem', borderRadius: 10, border: 'none', cursor: 'pointer',
+  },
+  row: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid #f1f5f9' },
+}
+
+function TabBtn({ active, onClick, icon: Icon, label }) {
   return (
-    <button onClick={onClick}
-      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors whitespace-nowrap
-        ${active ? 'bg-blue-700 text-white shadow' : 'text-slate-600 hover:bg-slate-100'}`}>
-      <Icon size={15} />{children}
+    <button onClick={onClick} style={{
+      display: 'flex', alignItems: 'center', gap: 7,
+      padding: '9px 16px', borderRadius: 10, border: 'none', cursor: 'pointer',
+      fontSize: '0.85rem', fontWeight: 500, whiteSpace: 'nowrap',
+      background: active ? '#1d4ed8' : 'transparent',
+      color: active ? '#fff' : '#64748b',
+      transition: 'all 0.15s',
+    }}
+      onMouseEnter={e => { if (!active) e.currentTarget.style.background = '#f1f5f9' }}
+      onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent' }}
+    >
+      <Icon size={15} />{label}
     </button>
+  )
+}
+
+function StatCard({ icon: Icon, value, label, color, bg }) {
+  return (
+    <div style={{ background: '#fff', border: '1px solid #f1f5f9', borderRadius: 14, padding: '20px 16px', textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+      <div style={{ width: 40, height: 40, background: bg, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px' }}>
+        <Icon size={18} color={color} />
+      </div>
+      <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', lineHeight: 1 }}>{value ?? '—'}</div>
+      <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: 4 }}>{label}</div>
+    </div>
   )
 }
 
@@ -21,13 +60,12 @@ export default function Admin() {
   const [photos, setPhotos] = useState([])
   const [users, setUsers] = useState([])
   const [categories, setCategories] = useState([])
-  const [pages, setPages] = useState({})
   const [uploading, setUploading] = useState(false)
   const [uploadForm, setUploadForm] = useState({ title: '', description: '', category_id: '', is_featured: false })
   const [selectedFile, setSelectedFile] = useState(null)
   const [preview, setPreview] = useState(null)
   const [newCat, setNewCat] = useState({ name: '', slug: '' })
-  const [msg, setMsg] = useState('')
+  const [msg, setMsg] = useState({ text: '', type: 'success' })
   const [editPage, setEditPage] = useState({ about: null, contacts: null })
   const fileRef = useRef()
 
@@ -47,7 +85,6 @@ export default function Admin() {
     setPhotos(Array.isArray(photosR) ? photosR : [])
     setUsers(Array.isArray(usersR) ? usersR : [])
     setCategories(Array.isArray(catsR) ? catsR : [])
-
     const [aboutR, contactsR] = await Promise.all([
       fetch('/api/pages/about').then(r => r.ok ? r.json() : null),
       fetch('/api/pages/contacts').then(r => r.ok ? r.json() : null),
@@ -55,12 +92,15 @@ export default function Admin() {
     setEditPage({ about: aboutR, contacts: contactsR })
   }
 
-  function showMsg(text) { setMsg(text); setTimeout(() => setMsg(''), 3000) }
+  function showMsg(text, type = 'success') {
+    setMsg({ text, type })
+    setTimeout(() => setMsg({ text: '', type: 'success' }), 3000)
+  }
 
   async function handleUpload(e) {
     e.preventDefault()
-    if (!selectedFile) { showMsg('Выберите файл'); return }
-    if (!uploadForm.title) { showMsg('Введите название'); return }
+    if (!selectedFile) { showMsg('Выберите файл', 'error'); return }
+    if (!uploadForm.title) { showMsg('Введите название', 'error'); return }
     setUploading(true)
     const fd = new FormData()
     fd.append('photo', selectedFile)
@@ -74,9 +114,10 @@ export default function Admin() {
       setPhotos(prev => [p, ...prev])
       setUploadForm({ title: '', description: '', category_id: '', is_featured: false })
       setSelectedFile(null); setPreview(null)
-      showMsg('Фото успешно добавлено!')
+      showMsg('Фото успешно загружено!')
+      setTab('photos')
     } else {
-      const d = await res.json(); showMsg(d.error || 'Ошибка загрузки')
+      const d = await res.json(); showMsg(d.error || 'Ошибка загрузки', 'error')
     }
     setUploading(false)
   }
@@ -104,13 +145,13 @@ export default function Admin() {
   }
 
   async function addCategory() {
-    if (!newCat.name || !newCat.slug) { showMsg('Заполните все поля'); return }
+    if (!newCat.name || !newCat.slug) { showMsg('Заполните все поля', 'error'); return }
     const res = await authFetch('/api/admin/categories', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newCat)
     })
     if (res.ok) { const c = await res.json(); setCategories(prev => [...prev, c]); setNewCat({ name: '', slug: '' }); showMsg('Категория добавлена') }
-    else { const d = await res.json(); showMsg(d.error) }
+    else { const d = await res.json(); showMsg(d.error, 'error') }
   }
 
   async function deleteCategory(id) {
@@ -126,179 +167,241 @@ export default function Admin() {
       body: JSON.stringify({ title: p.title, content: p.content })
     })
     if (res.ok) showMsg('Сохранено!')
-    else showMsg('Ошибка сохранения')
+    else showMsg('Ошибка сохранения', 'error')
   }
 
   if (!isAdmin) return null
 
+  const tabs = [
+    { id: 'photos', label: 'Фотографии', icon: Images },
+    { id: 'upload', label: 'Загрузить', icon: Upload },
+    { id: 'categories', label: 'Категории', icon: LayoutGrid },
+    { id: 'users', label: 'Пользователи', icon: Users },
+    { id: 'pages', label: 'Страницы', icon: FileText },
+  ]
+
   return (
-    <div className="pt-16 min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-            <Settings size={20} />
+    <div style={{ paddingTop: 64, minHeight: '100vh', background: '#f8fafc' }}>
+
+      {/* ── Header ──────────────────────────────────────── */}
+      <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', padding: '28px 0' }}>
+        <div className="wrap" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ width: 44, height: 44, background: '#2563eb', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Settings size={20} color="#fff" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">Панель администратора</h1>
-            <p className="text-slate-400 text-sm">Привет, {user?.name}</p>
+            <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f8fafc', lineHeight: 1.2 }}>Панель администратора</h1>
+            <p style={{ fontSize: '0.83rem', color: '#64748b', marginTop: 2 }}>Привет, {user?.name}</p>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        {/* Msg */}
-        {msg && <div className="mb-4 px-4 py-3 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm">{msg}</div>}
+      <div className="wrap" style={{ padding: '28px 24px 64px' }}>
 
-        {/* Stats */}
+        {/* ── Toast msg ────────────────────────────────── */}
+        {msg.text && (
+          <div style={{
+            marginBottom: 20, padding: '12px 18px', borderRadius: 10, fontSize: '0.875rem', fontWeight: 500,
+            background: msg.type === 'error' ? '#fef2f2' : '#f0fdf4',
+            border: `1px solid ${msg.type === 'error' ? '#fecaca' : '#bbf7d0'}`,
+            color: msg.type === 'error' ? '#dc2626' : '#15803d',
+          }}>{msg.text}</div>
+        )}
+
+        {/* ── Stats ────────────────────────────────────── */}
         {stats && (
-          <div className="grid grid-cols-3 gap-4 mb-8">
-            {[['Пользователей', stats.users, Users], ['Фотографий', stats.photos, Images], ['Категорий', stats.categories, LayoutGrid]].map(([label, val, Icon]) => (
-              <div key={label} className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 text-center">
-                <Icon size={20} className="text-blue-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-slate-800">{val}</div>
-                <div className="text-sm text-slate-500">{label}</div>
-              </div>
-            ))}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 24 }} className="stats-row">
+            <StatCard icon={Users} value={stats.users} label="Пользователей" color="#3b82f6" bg="#eff6ff" />
+            <StatCard icon={Images} value={stats.photos} label="Фотографий" color="#8b5cf6" bg="#f5f3ff" />
+            <StatCard icon={LayoutGrid} value={stats.categories} label="Категорий" color="#10b981" bg="#ecfdf5" />
           </div>
         )}
 
-        {/* Tabs */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
-          <TabBtn active={tab === 'photos'} onClick={() => setTab('photos')} icon={Images}>Фотографии</TabBtn>
-          <TabBtn active={tab === 'upload'} onClick={() => setTab('upload')} icon={Upload}>Загрузить</TabBtn>
-          <TabBtn active={tab === 'categories'} onClick={() => setTab('categories')} icon={LayoutGrid}>Категории</TabBtn>
-          <TabBtn active={tab === 'users'} onClick={() => setTab('users')} icon={Users}>Пользователи</TabBtn>
-          <TabBtn active={tab === 'pages'} onClick={() => setTab('pages')} icon={FileText}>Страницы</TabBtn>
+        {/* ── Tabs ─────────────────────────────────────── */}
+        <div style={{ display: 'flex', gap: 4, marginBottom: 20, overflowX: 'auto', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '6px' }}>
+          {tabs.map(t => <TabBtn key={t.id} active={tab === t.id} onClick={() => setTab(t.id)} icon={t.icon} label={t.label} />)}
         </div>
 
-        {/* Photos tab */}
+        {/* ══ PHOTOS tab ══════════════════════════════════ */}
         {tab === 'photos' && (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-            <div className="p-5 border-b border-slate-100 flex justify-between items-center">
-              <h2 className="font-semibold text-slate-800">Все фотографии ({photos.length})</h2>
+          <div style={S.card}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h2 style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.95rem' }}>Все фотографии ({photos.length})</h2>
+              <button onClick={() => setTab('upload')} style={{ ...S.btnPrimary, padding: '7px 14px', fontSize: '0.8rem' }}>
+                <Plus size={14} /> Добавить
+              </button>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-5">
-              {photos.map(photo => (
-                <div key={photo.id} className="relative group rounded-xl overflow-hidden bg-slate-100 aspect-square">
-                  <img src={photo.url} alt={photo.title} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
-                    <div className="flex justify-between">
-                      <button onClick={() => toggleFeatured(photo)} className="p-1.5 bg-white/20 rounded-lg hover:bg-white/30 text-white">
-                        {photo.is_featured ? <Star size={14} className="fill-amber-400 text-amber-400" /> : <StarOff size={14} />}
-                      </button>
-                      <button onClick={() => deletePhoto(photo.id)} className="p-1.5 bg-red-500/80 rounded-lg hover:bg-red-600 text-white">
-                        <Trash2 size={14} />
-                      </button>
+            {photos.length === 0 ? (
+              <div style={{ padding: '60px 20px', textAlign: 'center' }}>
+                <Images size={40} style={{ color: '#cbd5e1', margin: '0 auto 12px' }} />
+                <p style={{ color: '#94a3b8', fontWeight: 500 }}>Фотографий пока нет</p>
+                <p style={{ color: '#cbd5e1', fontSize: '0.8rem', marginTop: 4 }}>Загрузите первое фото</p>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, padding: 20 }} className="admin-photo-grid">
+                {photos.map(photo => (
+                  <div key={photo.id} style={{ position: 'relative', borderRadius: 10, overflow: 'hidden', aspectRatio: '1/1', background: '#f1f5f9' }}
+                    className="admin-photo-item">
+                    <img src={photo.url} alt={photo.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    <div className="admin-photo-hover" style={{
+                      position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.52)',
+                      display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                      padding: 8, opacity: 0, transition: 'opacity 0.2s',
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <button onClick={() => toggleFeatured(photo)} title={photo.is_featured ? 'Убрать с главной' : 'На главную'}
+                          style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {photo.is_featured ? <Star size={13} fill="#fbbf24" color="#fbbf24" /> : <StarOff size={13} color="#fff" />}
+                        </button>
+                        <button onClick={() => deletePhoto(photo.id)} title="Удалить"
+                          style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(239,68,68,0.85)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Trash2 size={13} color="#fff" />
+                        </button>
+                      </div>
+                      <p style={{ color: '#fff', fontSize: '0.72rem', fontWeight: 500, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{photo.title}</p>
                     </div>
-                    <p className="text-white text-xs font-medium truncate">{photo.title}</p>
+                    {photo.is_featured && (
+                      <div style={{ position: 'absolute', top: 6, left: 6, background: '#fbbf24', borderRadius: '50%', width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', color: '#fff', fontWeight: 700 }}>★</div>
+                    )}
                   </div>
-                </div>
-              ))}
-              {photos.length === 0 && (
-                <div className="col-span-4 py-16 text-center text-slate-400">
-                  <Images size={40} className="mx-auto mb-3 opacity-30" />
-                  <p>Фотографий ещё нет</p>
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
-        {/* Upload tab */}
+        {/* ══ UPLOAD tab ══════════════════════════════════ */}
         {tab === 'upload' && (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-            <h2 className="font-semibold text-slate-800 mb-6">Загрузить фотографию</h2>
-            <form onSubmit={handleUpload} className="space-y-5">
+          <div style={{ ...S.card, padding: '28px 28px' }}>
+            <h2 style={{ fontWeight: 700, color: '#0f172a', fontSize: '1rem', marginBottom: 24 }}>Загрузить фотографию</h2>
+            <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+
               {/* Dropzone */}
-              <div
-                onClick={() => fileRef.current.click()}
-                className="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors"
+              <div onClick={() => fileRef.current.click()}
+                style={{
+                  border: '2px dashed #cbd5e1', borderRadius: 14, padding: '36px 20px',
+                  textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s',
+                  background: preview ? '#f8fafc' : '#fafbff',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#3b82f6'; e.currentTarget.style.background = '#eff6ff' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.background = preview ? '#f8fafc' : '#fafbff' }}
               >
                 {preview ? (
-                  <div className="relative inline-block">
-                    <img src={preview} alt="preview" className="max-h-48 rounded-xl mx-auto object-cover" />
-                    <button type="button" onClick={e => { e.stopPropagation(); setPreview(null); setSelectedFile(null) }}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5"><X size={14} /></button>
+                  <div style={{ position: 'relative', display: 'inline-block' }}>
+                    <img src={preview} alt="preview" style={{ maxHeight: 200, borderRadius: 10, objectFit: 'cover' }} />
+                    <button type="button"
+                      onClick={e => { e.stopPropagation(); setPreview(null); setSelectedFile(null) }}
+                      style={{ position: 'absolute', top: -8, right: -8, width: 22, height: 22, background: '#ef4444', borderRadius: '50%', border: 'none', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <X size={12} />
+                    </button>
                   </div>
                 ) : (
                   <>
-                    <Upload size={32} className="text-slate-300 mx-auto mb-3" />
-                    <p className="text-slate-500 text-sm">Нажмите или перетащите фото</p>
-                    <p className="text-slate-400 text-xs mt-1">JPG, PNG, WebP до 10 МБ</p>
+                    <div style={{ width: 48, height: 48, background: '#f1f5f9', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                      <Upload size={22} color="#94a3b8" />
+                    </div>
+                    <p style={{ color: '#475569', fontSize: '0.9rem', fontWeight: 500 }}>Нажмите или перетащите фото</p>
+                    <p style={{ color: '#94a3b8', fontSize: '0.78rem', marginTop: 4 }}>JPG, PNG, WebP · до 10 МБ</p>
                   </>
                 )}
-                <input ref={fileRef} type="file" accept="image/*" className="hidden"
+                <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }}
                   onChange={e => {
                     const f = e.target.files[0]
                     if (f) { setSelectedFile(f); setPreview(URL.createObjectURL(f)) }
                   }} />
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="upload-row">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Название *</label>
+                  <label style={S.label}>Название <span style={{ color: '#ef4444' }}>*</span></label>
                   <input type="text" value={uploadForm.title}
                     onChange={e => setUploadForm({ ...uploadForm, title: e.target.value })}
-                    placeholder="Название фото" required
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    placeholder="Название фото" required style={S.input} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Категория</label>
+                  <label style={S.label}>Категория</label>
                   <select value={uploadForm.category_id}
                     onChange={e => setUploadForm({ ...uploadForm, category_id: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                    style={{ ...S.input, appearance: 'none' }}>
                     <option value="">Без категории</option>
                     {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                 </div>
               </div>
+
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Описание</label>
-                <textarea rows={2} value={uploadForm.description}
+                <label style={S.label}>Описание</label>
+                <textarea rows={3} value={uploadForm.description}
                   onChange={e => setUploadForm({ ...uploadForm, description: e.target.value })}
-                  placeholder="Краткое описание..."
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
+                  placeholder="Краткое описание (необязательно)..."
+                  style={{ ...S.input, resize: 'none' }} />
               </div>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={uploadForm.is_featured}
-                  onChange={e => setUploadForm({ ...uploadForm, is_featured: e.target.checked })}
-                  className="w-4 h-4 accent-amber-500" />
-                <span className="text-sm text-slate-700">Показать на главной странице</span>
+
+              <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+                <div
+                  onClick={() => setUploadForm({ ...uploadForm, is_featured: !uploadForm.is_featured })}
+                  style={{
+                    width: 40, height: 22, borderRadius: 999, cursor: 'pointer', transition: 'background 0.2s',
+                    background: uploadForm.is_featured ? '#fbbf24' : '#e2e8f0',
+                    position: 'relative', flexShrink: 0,
+                  }}>
+                  <div style={{
+                    position: 'absolute', top: 3, left: uploadForm.is_featured ? 21 : 3,
+                    width: 16, height: 16, background: '#fff', borderRadius: '50%', transition: 'left 0.2s',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                  }} />
+                </div>
+                <span style={{ fontSize: '0.875rem', color: '#374151', fontWeight: 500 }}>
+                  Показать на главной странице ⭐
+                </span>
               </label>
-              <button type="submit" disabled={uploading}
-                className="w-full py-3 bg-blue-700 text-white font-semibold rounded-xl hover:bg-blue-800 transition-colors disabled:opacity-60 flex items-center justify-center gap-2">
-                <Upload size={16} /> {uploading ? 'Загружаем...' : 'Загрузить фото'}
+
+              <button type="submit" disabled={uploading} style={{
+                ...S.btnPrimary, width: '100%', padding: '13px',
+                fontSize: '0.95rem', opacity: uploading ? 0.7 : 1, cursor: uploading ? 'not-allowed' : 'pointer',
+              }}>
+                <Upload size={17} /> {uploading ? 'Загружаем...' : 'Загрузить фото'}
               </button>
             </form>
           </div>
         )}
 
-        {/* Categories tab */}
+        {/* ══ CATEGORIES tab ══════════════════════════════ */}
         {tab === 'categories' && (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-            <h2 className="font-semibold text-slate-800 mb-5">Категории</h2>
-            <div className="flex gap-3 mb-6">
-              <input type="text" placeholder="Название" value={newCat.name}
-                onChange={e => setNewCat({ ...newCat, name: e.target.value })}
-                className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              <input type="text" placeholder="slug (без пробелов)" value={newCat.slug}
-                onChange={e => setNewCat({ ...newCat, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
-                className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              <button onClick={addCategory} className="px-4 py-2.5 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition-colors flex items-center gap-1">
-                <Plus size={16} />
-              </button>
+          <div style={S.card}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #f1f5f9' }}>
+              <h2 style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.95rem', marginBottom: 14 }}>Добавить категорию</h2>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <input type="text" placeholder="Название" value={newCat.name}
+                  onChange={e => setNewCat({ ...newCat, name: e.target.value })}
+                  style={{ ...S.input, flex: '1 1 160px' }} />
+                <input type="text" placeholder="slug (латиницей)" value={newCat.slug}
+                  onChange={e => setNewCat({ ...newCat, slug: e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') })}
+                  style={{ ...S.input, flex: '1 1 160px' }} />
+                <button onClick={addCategory} style={{ ...S.btnPrimary, padding: '10px 18px', flexShrink: 0 }}>
+                  <Plus size={15} /> Добавить
+                </button>
+              </div>
             </div>
-            <div className="space-y-2">
-              {categories.map(c => (
-                <div key={c.id} className="flex items-center justify-between px-4 py-3 bg-slate-50 rounded-xl">
-                  <div>
-                    <span className="font-medium text-slate-800 text-sm">{c.name}</span>
-                    <span className="ml-2 text-slate-400 text-xs">{c.slug}</span>
-                    <span className="ml-2 text-blue-600 text-xs font-medium">{c.photo_count} фото</span>
+            <div style={{ padding: '8px 0' }}>
+              {categories.length === 0 ? (
+                <p style={{ padding: '24px', textAlign: 'center', color: '#94a3b8', fontSize: '0.875rem' }}>Категорий пока нет</p>
+              ) : categories.map((c, i) => (
+                <div key={c.id} style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '12px 24px', borderBottom: i < categories.length - 1 ? '1px solid #f8fafc' : 'none',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#3b82f6' }} />
+                    <span style={{ fontWeight: 600, color: '#1e293b', fontSize: '0.875rem' }}>{c.name}</span>
+                    <span style={{ color: '#94a3b8', fontSize: '0.78rem', fontFamily: 'monospace' }}>{c.slug}</span>
+                    <span style={{ padding: '2px 8px', background: '#eff6ff', color: '#1d4ed8', borderRadius: 999, fontSize: '0.72rem', fontWeight: 600 }}>{c.photo_count} фото</span>
                   </div>
-                  <button onClick={() => deleteCategory(c.id)} className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
-                    <Trash2 size={14} />
+                  <button onClick={() => deleteCategory(c.id)}
+                    style={{ width: 30, height: 30, borderRadius: 8, background: 'none', border: '1px solid #e2e8f0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.border = '1px solid #fecaca' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.border = '1px solid #e2e8f0' }}>
+                    <Trash2 size={13} />
                   </button>
                 </div>
               ))}
@@ -306,68 +409,96 @@ export default function Admin() {
           </div>
         )}
 
-        {/* Users tab */}
+        {/* ══ USERS tab ═══════════════════════════════════ */}
         {tab === 'users' && (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-            <div className="p-5 border-b border-slate-100">
-              <h2 className="font-semibold text-slate-800">Пользователи ({users.length})</h2>
+          <div style={S.card}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid #f1f5f9' }}>
+              <h2 style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.95rem' }}>Пользователи ({users.length})</h2>
             </div>
-            <div className="divide-y divide-slate-100">
-              {users.map(u => (
-                <div key={u.id} className="flex items-center justify-between px-5 py-4">
-                  <div>
-                    <p className="font-medium text-slate-800 text-sm">{u.name}</p>
-                    <p className="text-slate-400 text-xs">{u.email}</p>
+            {users.map((u, i) => (
+              <div key={u.id} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '14px 20px', borderBottom: i < users.length - 1 ? '1px solid #f8fafc' : 'none',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 38, height: 38, background: u.role === 'admin' ? '#eff6ff' : '#f8fafc', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid #e2e8f0', fontSize: '0.85rem', fontWeight: 700, color: u.role === 'admin' ? '#1d4ed8' : '#64748b', flexShrink: 0 }}>
+                    {u.name[0].toUpperCase()}
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${u.role === 'admin' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'}`}>
-                      {u.role === 'admin' ? 'Админ' : 'Пользователь'}
-                    </span>
-                    {u.id !== user?.id && (
-                      <button
-                        onClick={() => changeRole(u.id, u.role === 'admin' ? 'user' : 'admin')}
-                        className="text-xs text-blue-600 hover:underline">
-                        {u.role === 'admin' ? 'Разжаловать' : 'Сделать админом'}
-                      </button>
-                    )}
+                  <div>
+                    <p style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.875rem' }}>{u.name}</p>
+                    <p style={{ color: '#94a3b8', fontSize: '0.775rem', marginTop: 1 }}>{u.email}</p>
                   </div>
                 </div>
-              ))}
-            </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{
+                    padding: '4px 10px', borderRadius: 999, fontSize: '0.75rem', fontWeight: 600,
+                    background: u.role === 'admin' ? '#eff6ff' : '#f1f5f9',
+                    color: u.role === 'admin' ? '#1d4ed8' : '#64748b',
+                  }}>
+                    {u.role === 'admin' ? 'Админ' : 'Пользователь'}
+                  </span>
+                  {u.id !== user?.id && (
+                    <button onClick={() => changeRole(u.id, u.role === 'admin' ? 'user' : 'admin')}
+                      style={{ padding: '5px 12px', borderRadius: 8, border: '1.5px solid #e2e8f0', background: '#fff', color: '#1d4ed8', fontSize: '0.775rem', fontWeight: 500, cursor: 'pointer' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#eff6ff'}
+                      onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
+                      {u.role === 'admin' ? 'Разжаловать' : 'Сделать админом'}
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
-        {/* Pages tab */}
+        {/* ══ PAGES tab ═══════════════════════════════════ */}
         {tab === 'pages' && (
-          <div className="space-y-6">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {[['about', 'О школе'], ['contacts', 'Контакты']].map(([slug, title]) => (
-              <div key={slug} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-                <h2 className="font-semibold text-slate-800 mb-4">{title}</h2>
-                {editPage[slug] ? (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1.5">Заголовок</label>
-                      <input type="text" value={editPage[slug].title}
-                        onChange={e => setEditPage(prev => ({ ...prev, [slug]: { ...prev[slug], title: e.target.value } }))}
-                        className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <div key={slug} style={{ ...S.card, padding: 0 }}>
+                <div style={{ padding: '16px 24px', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <FileText size={16} color="#3b82f6" />
+                  <h2 style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.95rem' }}>Страница «{title}»</h2>
+                </div>
+                <div style={{ padding: '24px' }}>
+                  {editPage[slug] ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      <div>
+                        <label style={S.label}>Заголовок</label>
+                        <input type="text" value={editPage[slug].title}
+                          onChange={e => setEditPage(prev => ({ ...prev, [slug]: { ...prev[slug], title: e.target.value } }))}
+                          style={S.input} />
+                      </div>
+                      <div>
+                        <label style={S.label}>Текст страницы</label>
+                        <textarea rows={7} value={editPage[slug].content}
+                          onChange={e => setEditPage(prev => ({ ...prev, [slug]: { ...prev[slug], content: e.target.value } }))}
+                          style={{ ...S.input, resize: 'vertical' }} />
+                      </div>
+                      <div>
+                        <button onClick={() => savePage(slug)} style={{ ...S.btnPrimary, gap: 7 }}>
+                          <Save size={15} /> Сохранить изменения
+                        </button>
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1.5">Текст</label>
-                      <textarea rows={6} value={editPage[slug].content}
-                        onChange={e => setEditPage(prev => ({ ...prev, [slug]: { ...prev[slug], content: e.target.value } }))}
-                        className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
-                    </div>
-                    <button onClick={() => savePage(slug)}
-                      className="px-6 py-2.5 bg-blue-700 text-white font-medium rounded-xl hover:bg-blue-800 transition-colors text-sm">
-                      Сохранить
-                    </button>
-                  </div>
-                ) : <p className="text-slate-400 text-sm">Загрузка...</p>}
+                  ) : (
+                    <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Загрузка...</p>
+                  )}
+                </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      <style>{`
+        .admin-photo-item:hover .admin-photo-hover { opacity: 1 !important; }
+        @media (max-width: 640px) {
+          .stats-row { grid-template-columns: repeat(3, 1fr) !important; }
+          .admin-photo-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .upload-row { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   )
 }
