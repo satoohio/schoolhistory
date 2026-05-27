@@ -6,3 +6,9 @@ id = "9IU0O7IOZVJZ2AMuDjrc2"
 uri = "file://README.md"
 type = "text"
 title = "README.md — Документация сайта Школа №1"
+
+[[outputs]]
+id = "CEimqDheFKPbzkmfUcNfR"
+uri = "file://DEPLOY.md"
+type = "text"
+title = "Инструкция по бесплатному деплою"
