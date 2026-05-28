@@ -1,0 +1,160 @@
+2026-05-28 16:53:24.29
+d90b63ab
+User
+at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+2026-05-28 16:53:24.29
+d90b63ab
+User
+at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+2026-05-28 16:53:24.29
+d90b63ab
+User
+throw new ERR_MODULE_NOT_FOUND(
+2026-05-28 16:53:24.29
+d90b63ab
+User
+^
+2026-05-28 16:53:24.30
+d90b63ab
+System
+command finished with error [node server/index.js]: exit status 1
+2026-05-28 16:53:32.36
+d90b63ab
+User
+at moduleResolve (node:internal/modules/esm/resolve:952:10)
+2026-05-28 16:53:32.36
+d90b63ab
+User
+url: 'file:///home/runner/workspace/server/routes/contacts.js'
+2026-05-28 16:53:32.36
+d90b63ab
+User
+at finalizeResolution (node:internal/modules/esm/resolve:283:11)
+2026-05-28 16:53:32.36
+d90b63ab
+User
+code: 'ERR_MODULE_NOT_FOUND',
+2026-05-28 16:53:32.36
+d90b63ab
+User
+at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+2026-05-28 16:53:32.36
+d90b63ab
+User
+at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+2026-05-28 16:53:32.36
+d90b63ab
+User
+at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+2026-05-28 16:53:32.36
+d90b63ab
+User
+at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+2026-05-28 16:53:32.36
+d90b63ab
+User
+}
+2026-05-28 16:53:32.36
+d90b63ab
+User
+Node.js v20.20.0
+2026-05-28 16:53:32.36
+d90b63ab
+User
+at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+2026-05-28 16:53:32.36
+d90b63ab
+User
+throw new ERR_MODULE_NOT_FOUND(
+2026-05-28 16:53:32.36
+d90b63ab
+User
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/runner/workspace/server/routes/contacts.js' imported from /home/runner/workspace/server/index.js
+2026-05-28 16:53:32.36
+d90b63ab
+User
+^
+2026-05-28 16:53:32.36
+d90b63ab
+User
+node:internal/modules/esm/resolve:283
+2026-05-28 16:53:32.36
+d90b63ab
+User
+at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+2026-05-28 16:53:32.37
+d90b63ab
+System
+command finished with error [node server/index.js]: exit status 1
+2026-05-28 16:53:40.76
+d90b63ab
+User
+at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+2026-05-28 16:53:40.76
+d90b63ab
+User
+Node.js v20.20.0
+2026-05-28 16:53:40.76
+d90b63ab
+User
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/runner/workspace/server/routes/contacts.js' imported from /home/runner/workspace/server/index.js
+2026-05-28 16:53:40.76
+d90b63ab
+User
+throw new ERR_MODULE_NOT_FOUND(
+2026-05-28 16:53:40.76
+d90b63ab
+User
+at finalizeResolution (node:internal/modules/esm/resolve:283:11)
+2026-05-28 16:53:40.76
+d90b63ab
+User
+at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+2026-05-28 16:53:40.76
+d90b63ab
+User
+at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+2026-05-28 16:53:40.76
+d90b63ab
+User
+at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+2026-05-28 16:53:40.76
+d90b63ab
+User
+at moduleResolve (node:internal/modules/esm/resolve:952:10)
+2026-05-28 16:53:40.76
+d90b63ab
+User
+url: 'file:///home/runner/workspace/server/routes/contacts.js'
+2026-05-28 16:53:40.76
+d90b63ab
+User
+^
+2026-05-28 16:53:40.76
+d90b63ab
+User
+at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+2026-05-28 16:53:40.76
+d90b63ab
+User
+}
+2026-05-28 16:53:40.76
+d90b63ab
+User
+at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+2026-05-28 16:53:40.76
+d90b63ab
+User
+node:internal/modules/esm/resolve:283
+2026-05-28 16:53:40.76
+d90b63ab
+User
+code: 'ERR_MODULE_NOT_FOUND',
+2026-05-28 16:53:40.77
+d90b63ab
+System
+command finished with error [node server/index.js]: exit status 1
+2026-05-28 16:53:44.84
+d90b63ab
+System
+crash loop detected

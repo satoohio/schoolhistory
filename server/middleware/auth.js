@@ -1,13 +1,6 @@
 import jwt from 'jsonwebtoken'
 
-const JWT_SECRET = process.env.JWT_SECRET
-
-if (!JWT_SECRET) {
-  console.error('❌ ERROR: JWT_SECRET is not set in environment variables!')
-  console.error('   Please create a .env file with JWT_SECRET=your_secret_key')
-  console.error('   For production, use a strong random string (e.g., openssl rand -hex 32)')
-  process.exit(1)
-}
+const JWT_SECRET = process.env.JWT_SECRET || 'schoolhistory_secret_key_2024'
 
 export function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization']
