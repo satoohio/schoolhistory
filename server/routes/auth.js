@@ -47,6 +47,9 @@ router.post('/login', async (req, res) => {
     if (!valid)
       return res.status(401).json({ error: 'Неверный email или пароль' })
 
+    if (user.is_banned)
+      return res.status(403).json({ error: 'Ваш аккаунт заблокирован. Обратитесь к администратору.' })
+
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role, name: user.name }, JWT_SECRET, { expiresIn: '7d' })
     res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } })
   } catch (err) {
