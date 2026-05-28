@@ -41,7 +41,7 @@ export default function Footer() {
               <span
                 style={{ color: "#f8fafc", fontWeight: 700, fontSize: "1rem" }}
               >
-                Гимназия № 11
+                Гимназия №11
               </span>
             </div>
             <p
@@ -81,7 +81,7 @@ export default function Footer() {
               {[
                 ["/", "Главная"],
                 ["/gallery", "Галерея"],
-                ["/about", "О школе"],
+                ["/about", "О Гимназии №11"],
                 ["/contacts", "Контакты"],
               ].map(([to, label]) => (
                 <li key={to}>
@@ -152,7 +152,7 @@ export default function Footer() {
             color: "#475569",
           }}
         >
-          © {new Date().getFullYear()} Гимназия № 11. Все права защищены.
+          © {new Date().getFullYear()} Гимназия №11. Все права защищены.
         </div>
       </div>
     </footer>

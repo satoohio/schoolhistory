@@ -42,7 +42,7 @@ export default function Navbar() {
   const links = [
     { to: "/", label: "Главная" },
     { to: "/gallery", label: "Галерея" },
-    { to: "/about", label: "О школе" },
+    { to: "/about", label: "О Гимназии №11" },
     { to: "/contacts", label: "Контакты" },
   ];
 
@@ -99,7 +99,7 @@ export default function Navbar() {
             <GraduationCap size={19} color="#fff" />
           </div>
           <span style={{ display: "none" }} className="logo-text">
-            Гимназия № 11
+            Гимназия №11
           </span>
         </Link>
 

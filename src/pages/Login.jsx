@@ -75,7 +75,7 @@ export default function Login() {
             Вход в систему
           </h1>
           <p style={{ color: "#64748b", fontSize: "0.9rem" }}>
-            Гимназия № 11 · Личный кабинет
+            Гимназия №11 · Личный кабинет
           </p>
         </div>
 

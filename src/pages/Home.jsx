@@ -94,7 +94,7 @@ export default function Home() {
               }}
             >
               <Star size={13} fill="#93c5fd" color="#93c5fd" />
-              Добро пожаловать в Гимназию № 11
+              Добро пожаловать в Гимназию №11
             </div>
 
             <h1
@@ -148,7 +148,7 @@ export default function Home() {
                 <Images size={17} /> Смотреть галерею
               </Link>
               <Link to="/about" className="btn-outline">
-                О нашей школе <ArrowRight size={16} />
+                О нашей Гимназии №11 <ArrowRight size={16} />
               </Link>
             </div>
           </div>
