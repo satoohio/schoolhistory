@@ -9,6 +9,9 @@ export default function Gallery() {
   const [search, setSearch] = useState("");
   const [lbIndex, setLbIndex] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const limit = 20;
 
   useEffect(() => {
     fetch("/api/photos/categories")
@@ -18,19 +21,47 @@ export default function Gallery() {
 
   useEffect(() => {
     setLoading(true);
-    const params = new URLSearchParams({ limit: "100" });
+    const params = new URLSearchParams({ 
+      limit: String(limit), 
+      offset: String(offset) 
+    });
     if (activeCategory !== "all") params.set("category", activeCategory);
+    
     fetch(`/api/photos?${params}`)
       .then((r) => r.json())
-      .then((data) => setPhotos(Array.isArray(data) ? data : []))
+      .then((data) => {
+        if (Array.isArray(data)) {
+          if (offset === 0) {
+            setPhotos(data);
+          } else {
+            setPhotos(prev => [...prev, ...data]);
+          }
+          setTotal(data.length);
+        }
+      })
       .finally(() => setLoading(false));
-  }, [activeCategory]);
+  }, [activeCategory, offset]);
 
   const filtered = photos.filter(
     (p) =>
       p.title.toLowerCase().includes(search.toLowerCase()) ||
       (p.description || "").toLowerCase().includes(search.toLowerCase()),
   );
+
+  const canLoadMore = total === limit;
+
+  function loadMore() {
+    setOffset(prev => prev + limit);
+  }
+
+  function resetGallery() {
+    setOffset(0);
+    setPhotos([]);
+  }
+
+  useEffect(() => {
+    resetGallery();
+  }, [activeCategory, search]);
 
   return (
     <div style={{ paddingTop: 64, minHeight: "100vh" }}>
@@ -243,6 +274,15 @@ export default function Gallery() {
               ))}
             </div>
           </>
+        )}
+
+        {/* Load More Button */}
+        {canLoadMore && !loading && filtered.length > 0 && (
+          <div style={{ textAlign: "center", marginTop: 32 }}>
+            <button onClick={loadMore} className="btn-primary">
+              Загрузить ещё
+            </button>
+          </div>
         )}
       </div>
 

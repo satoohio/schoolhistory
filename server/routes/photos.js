@@ -70,7 +70,7 @@ if (process.env.CLOUDINARY_URL) {
 
 router.get('/', async (req, res) => {
   try {
-    const { category, featured, limit = 50, offset = 0 } = req.query
+    const { category, featured, limit = 20, offset = 0 } = req.query
     let query = `
       SELECT p.*, c.name as category_name, c.slug as category_slug, u.name as uploader_name
       FROM photos p
@@ -87,7 +87,7 @@ router.get('/', async (req, res) => {
     const result = await pool.query(query, params)
     res.json(result.rows)
   } catch (err) {
-    console.error(err)
+    console.error('Photos fetch error:', err.message)
     res.status(500).json({ error: 'Ошибка сервера' })
   }
 })
