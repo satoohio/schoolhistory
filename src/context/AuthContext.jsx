@@ -6,13 +6,26 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [token, setToken] = useState(() => localStorage.getItem('token'))
   const [loading, setLoading] = useState(true)
+  const [authError, setAuthError] = useState(null)
 
   useEffect(() => {
     if (token) {
       fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
-        .then(r => r.ok ? r.json() : null)
-        .then(data => { if (data) setUser(data); else logout() })
-        .catch(() => logout())
+        .then(r => {
+          if (!r.ok) {
+            throw new Error('Token invalid')
+          }
+          return r.json()
+        })
+        .then(data => { 
+          if (data) setUser(data)
+          setAuthError(null)
+        })
+        .catch((err) => {
+          console.warn('Auth check failed:', err.message)
+          setAuthError('Не удалось проверить авторизацию')
+          logout()
+        })
         .finally(() => setLoading(false))
     } else {
       setLoading(false)
@@ -23,6 +36,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem('token', token)
     setToken(token)
     setUser(userData)
+    setAuthError(null)
   }
 
   function logout() {
@@ -31,13 +45,31 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
 
-  const authFetch = (url, opts = {}) => fetch(url, {
-    ...opts,
-    headers: { ...opts.headers, Authorization: `Bearer ${token}` },
-  })
+  const authFetch = async (url, opts = {}) => {
+    const response = await fetch(url, {
+      ...opts,
+      headers: { ...opts.headers, Authorization: `Bearer ${token}` },
+    })
+    
+    if (response.status === 401 || response.status === 403) {
+      logout()
+      throw new Error('Unauthorized')
+    }
+    
+    return response
+  }
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout, authFetch, isAdmin: user?.role === 'admin' }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      token, 
+      loading, 
+      login, 
+      logout, 
+      authFetch, 
+      isAdmin: user?.role === 'admin',
+      authError 
+    }}>
       {children}
     </AuthContext.Provider>
   )
