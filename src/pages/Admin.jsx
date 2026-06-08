@@ -5,6 +5,7 @@ import {
   Upload, Trash2, Users, Images, LayoutGrid, FileText,
   Plus, X, Star, StarOff, Save, Ban, UserCheck,
   Search, Edit2, Check, RefreshCw, ShieldAlert, Aperture, Camera,
+  Eye, EyeOff,
 } from "lucide-react";
 
 // ── Design tokens ──────────────────────────────────────────────────────────
@@ -223,7 +224,7 @@ export default function Admin() {
   async function loadAll() {
     const [statsR, photosR, usersR, catsR] = await Promise.all([
       authFetch("/api/admin/stats").then((r) => r.json()),
-      authFetch("/api/photos?limit=200").then((r) => r.json()),
+      authFetch("/api/photos?limit=200&admin=true").then((r) => r.json()),
       authFetch("/api/admin/users").then((r) => r.json()),
       authFetch("/api/photos/categories").then((r) => r.json()),
     ]);
@@ -291,6 +292,19 @@ export default function Admin() {
     if (res.ok) {
       const p = await res.json();
       setPhotos((prev) => prev.map((x) => (x.id === p.id ? p : x)));
+    }
+  }
+
+  async function toggleVisibility(photo) {
+    const res = await authFetch(`/api/photos/${photo.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...photo, is_visible: !photo.is_visible }),
+    });
+    if (res.ok) {
+      const p = await res.json();
+      setPhotos((prev) => prev.map((x) => (x.id === p.id ? p : x)));
+      showMsg(p.is_visible ? "Фото отображается в галерее" : "Фото скрыто из галереи");
     }
   }
 
@@ -571,6 +585,11 @@ export default function Admin() {
                             : <StarOff size={13} color="#fff" />}
                         </button>
                         <div style={{ display: "flex", gap: 4 }}>
+                          <button onClick={() => toggleVisibility(photo)}
+                            title={photo.is_visible ? "Скрыть из галереи" : "Показать в галерее"}
+                            style={{ width: 28, height: 28, borderRadius: 8, background: photo.is_visible ? "rgba(34,197,94,0.85)" : "rgba(107,114,128,0.85)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            {photo.is_visible ? <Eye size={12} color="#fff" /> : <EyeOff size={12} color="#fff" />}
+                          </button>
                           <button onClick={() => setEditPhotoModal({ ...photo })}
                             title="Редактировать"
                             style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(181,112,42,0.85)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -587,6 +606,23 @@ export default function Admin() {
                         {photo.title}
                       </p>
                     </div>
+                    {/* Hidden overlay — always visible if photo is hidden */}
+                    {!photo.is_visible && (
+                      <div style={{
+                        position: "absolute", inset: 0,
+                        background: "rgba(0,0,0,0.52)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        pointerEvents: "none",
+                      }}>
+                        <div style={{
+                          background: "rgba(0,0,0,0.6)", borderRadius: 8,
+                          padding: "4px 8px", display: "flex", alignItems: "center", gap: 5,
+                        }}>
+                          <EyeOff size={13} color="#fff" />
+                          <span style={{ color: "#fff", fontSize: "0.68rem", fontWeight: 600 }}>Скрыто</span>
+                        </div>
+                      </div>
+                    )}
                     {photo.is_featured && (
                       <div style={{
                         position: "absolute", top: 6, left: 6,
@@ -1045,6 +1081,18 @@ export default function Admin() {
                 onChange={(e) => setEditPhotoModal((p) => ({ ...p, is_featured: e.target.checked }))}
                 style={{ width: 16, height: 16, accentColor: C.gold }} />
               <span style={{ fontSize: "0.875rem", color: C.textMid, fontWeight: 500 }}>★ На главную страницу</span>
+            </label>
+            <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+              <input type="checkbox"
+                checked={editPhotoModal.is_visible !== false}
+                onChange={(e) => setEditPhotoModal((p) => ({ ...p, is_visible: e.target.checked }))}
+                style={{ width: 16, height: 16, accentColor: "#22c55e" }} />
+              <span style={{ fontSize: "0.875rem", fontWeight: 500,
+                color: editPhotoModal.is_visible !== false ? "#15803d" : C.textMuted }}>
+                {editPhotoModal.is_visible !== false
+                  ? "👁 Отображается в галерее"
+                  : "🚫 Скрыто из галереи"}
+              </span>
             </label>
             <div style={{ display: "flex", gap: 10 }}>
               <button onClick={savePhotoEdit} style={{ ...S.btnPrimary, flex: 1 }}>

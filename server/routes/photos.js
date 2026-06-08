@@ -7,7 +7,7 @@ import { authenticateToken, requireAdmin } from '../middleware/auth.js'
 
 const router = express.Router()
 
-// ── Cloudinary (production) or local disk (development) ──────────────────────
+// ── Cloudinary (production) or local disk (development) ─────────────────────
 let uploadMiddleware
 let getFileUrl
 let deleteFile
@@ -66,11 +66,10 @@ if (process.env.CLOUDINARY_URL) {
   }
 }
 
-// ── Routes ────────────────────────────────────────────────────────────────────
-
+// ── GET /api/photos — public gallery (only visible photos) ──────────────────
 router.get('/', async (req, res) => {
   try {
-    const { category, featured, limit = 20, offset = 0 } = req.query
+    const { category, featured, limit = 20, offset = 0, admin } = req.query
     let query = `
       SELECT p.*, c.name as category_name, c.slug as category_slug, u.name as uploader_name
       FROM photos p
@@ -79,9 +78,15 @@ router.get('/', async (req, res) => {
       WHERE 1=1
     `
     const params = []
+
+    // Admin mode: show all photos including hidden
+    if (admin !== 'true') {
+      query += ` AND p.is_visible = true`
+    }
+
     if (category) { params.push(category); query += ` AND c.slug = $${params.length}` }
     if (featured === 'true') { query += ` AND p.is_featured = true` }
-    params.push(parseInt(limit)); query += ` ORDER BY p.created_at DESC LIMIT $${params.length}`
+    params.push(parseInt(limit));  query += ` ORDER BY p.created_at DESC LIMIT $${params.length}`
     params.push(parseInt(offset)); query += ` OFFSET $${params.length}`
 
     const result = await pool.query(query, params)
@@ -92,12 +97,13 @@ router.get('/', async (req, res) => {
   }
 })
 
+// ── GET /api/photos/categories ───────────────────────────────────────────────
 router.get('/categories', async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT c.*, COUNT(p.id)::int as photo_count
       FROM categories c
-      LEFT JOIN photos p ON p.category_id = c.id
+      LEFT JOIN photos p ON p.category_id = c.id AND p.is_visible = true
       GROUP BY c.id ORDER BY c.name
     `)
     res.json(result.rows)
@@ -106,6 +112,7 @@ router.get('/categories', async (req, res) => {
   }
 })
 
+// ── POST /api/photos — upload ────────────────────────────────────────────────
 router.post('/', authenticateToken, requireAdmin, (req, res) => {
   uploadMiddleware(req, res, async (err) => {
     if (err) return res.status(400).json({ error: err.message })
@@ -118,8 +125,8 @@ router.post('/', authenticateToken, requireAdmin, (req, res) => {
       const filename = req.file.filename || req.file.public_id || req.file.originalname
 
       const result = await pool.query(
-        `INSERT INTO photos (title, description, filename, url, category_id, uploaded_by, is_featured)
-         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+        `INSERT INTO photos (title, description, filename, url, category_id, uploaded_by, is_featured, is_visible)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, true) RETURNING *`,
         [title, description || null, filename, url,
          category_id ? parseInt(category_id) : null, req.user.id, is_featured === 'true']
       )
@@ -131,6 +138,7 @@ router.post('/', authenticateToken, requireAdmin, (req, res) => {
   })
 })
 
+// ── DELETE /api/photos/:id ───────────────────────────────────────────────────
 router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const result = await pool.query('SELECT filename FROM photos WHERE id = $1', [req.params.id])
@@ -143,13 +151,22 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
   }
 })
 
+// ── PATCH /api/photos/:id — edit meta + visibility ──────────────────────────
 router.patch('/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const { title, description, category_id, is_featured } = req.body
+    const { title, description, category_id, is_featured, is_visible } = req.body
     const result = await pool.query(
-      `UPDATE photos SET title=$1, description=$2, category_id=$3, is_featured=$4
-       WHERE id=$5 RETURNING *`,
-      [title, description, category_id ? parseInt(category_id) : null, is_featured, req.params.id]
+      `UPDATE photos
+       SET title=$1, description=$2, category_id=$3, is_featured=$4, is_visible=$5
+       WHERE id=$6 RETURNING *`,
+      [
+        title,
+        description,
+        category_id ? parseInt(category_id) : null,
+        is_featured,
+        is_visible !== undefined ? is_visible : true,
+        req.params.id,
+      ]
     )
     if (result.rows.length === 0) return res.status(404).json({ error: 'Фото не найдено' })
     res.json(result.rows[0])
