@@ -890,35 +890,128 @@ export default function Admin() {
         {/* ══ PAGES tab ════════════════════════════════════════════ */}
         {tab === "pages" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            {[["about", "О студии"], ["contacts", "Контакты"]].map(([slug, title]) => (
-              <div key={slug} style={{ ...S.card, padding: 0 }}>
-                <div style={{ padding: "16px 24px", borderBottom: `1px solid ${C.borderLight}`, display: "flex", alignItems: "center", gap: 10 }}>
-                  <FileText size={16} color={C.gold} />
-                  <h2 style={{ fontWeight: 700, color: C.text, fontSize: "0.95rem" }}>Страница «{title}»</h2>
-                </div>
-                <div style={{ padding: "24px" }}>
-                  {editPage[slug] ? (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                      <div>
-                        <label style={S.label}>Заголовок</label>
-                        <input type="text" value={editPage[slug].title} style={S.input}
-                          onChange={(e) => setEditPage((prev) => ({ ...prev, [slug]: { ...prev[slug], title: e.target.value } }))} />
-                      </div>
-                      <div>
-                        <label style={S.label}>Текст страницы</label>
-                        <textarea rows={9} style={{ ...S.input, resize: "vertical" }} value={editPage[slug].content}
-                          onChange={(e) => setEditPage((prev) => ({ ...prev, [slug]: { ...prev[slug], content: e.target.value } }))} />
-                      </div>
-                      <button onClick={() => savePage(slug)} style={{ ...S.btnPrimary, gap: 7 }}>
-                        <Save size={15} /> Сохранить изменения
-                      </button>
-                    </div>
-                  ) : (
-                    <p style={{ color: C.textMuted, fontSize: "0.875rem" }}>Загрузка...</p>
-                  )}
+
+            {/* ── About page ── */}
+            <div style={{ ...S.card, padding: 0 }}>
+              <div style={{ padding: "16px 24px", borderBottom: `1px solid ${C.borderLight}`, display: "flex", alignItems: "center", gap: 10 }}>
+                <FileText size={16} color={C.gold} />
+                <div>
+                  <h2 style={{ fontWeight: 700, color: C.text, fontSize: "0.95rem" }}>Страница «О студии»</h2>
+                  <p style={{ fontSize: "0.78rem", color: C.textMuted, marginTop: 2 }}>
+                    Заголовок отображается в шапке страницы, текст — в блоке с историей студии
+                  </p>
                 </div>
               </div>
-            ))}
+              <div style={{ padding: "24px" }}>
+                {editPage.about ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                    <div>
+                      <label style={S.label}>Заголовок страницы</label>
+                      <input type="text" value={editPage.about.title} style={S.input}
+                        placeholder="О студии LUMINAS"
+                        onChange={(e) => setEditPage((prev) => ({ ...prev, about: { ...prev.about, title: e.target.value } }))} />
+                    </div>
+                    <div>
+                      <label style={S.label}>История студии (основной текст)</label>
+                      <textarea rows={9} style={{ ...S.input, resize: "vertical" }} value={editPage.about.content}
+                        placeholder="Расскажите историю студии..."
+                        onChange={(e) => setEditPage((prev) => ({ ...prev, about: { ...prev.about, content: e.target.value } }))} />
+                    </div>
+                    <button onClick={() => savePage("about")} style={{ ...S.btnPrimary, gap: 7 }}>
+                      <Save size={15} /> Сохранить
+                    </button>
+                  </div>
+                ) : (
+                  <p style={{ color: C.textMuted, fontSize: "0.875rem" }}>Загрузка...</p>
+                )}
+              </div>
+            </div>
+
+            {/* ── Contacts page ── */}
+            <div style={{ ...S.card, padding: 0 }}>
+              <div style={{ padding: "16px 24px", borderBottom: `1px solid ${C.borderLight}`, display: "flex", alignItems: "center", gap: 10 }}>
+                <FileText size={16} color={C.gold} />
+                <div>
+                  <h2 style={{ fontWeight: 700, color: C.text, fontSize: "0.95rem" }}>Страница «Контакты»</h2>
+                  <p style={{ fontSize: "0.78rem", color: C.textMuted, marginTop: 2 }}>
+                    Эти данные отображаются на странице Контакты — адрес, телефон, email и режим работы
+                  </p>
+                </div>
+              </div>
+              <div style={{ padding: "24px" }}>
+                {editPage.contacts ? (() => {
+                  let parsed = {};
+                  try { parsed = JSON.parse(editPage.contacts.content || "{}"); } catch {}
+                  function updateContact(key, val) {
+                    const updated = { ...parsed, [key]: val };
+                    setEditPage((prev) => ({
+                      ...prev,
+                      contacts: { ...prev.contacts, content: JSON.stringify(updated) },
+                    }));
+                  }
+                  return (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                      <div>
+                        <label style={S.label}>Заголовок страницы</label>
+                        <input type="text" value={editPage.contacts.title} style={S.input}
+                          placeholder="Свяжитесь с нами"
+                          onChange={(e) => setEditPage((prev) => ({ ...prev, contacts: { ...prev.contacts, title: e.target.value } }))} />
+                      </div>
+                      <div>
+                        <label style={S.label}>Подзаголовок / описание</label>
+                        <input type="text" value={parsed.intro || ""} style={S.input}
+                          placeholder="Ответим в течение часа..."
+                          onChange={(e) => updateContact("intro", e.target.value)} />
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }} className="upload-row">
+                        <div>
+                          <label style={S.label}>Адрес студии</label>
+                          <input type="text" value={parsed.address || ""} style={S.input}
+                            placeholder="г. Москва, ул. Арбат, 12"
+                            onChange={(e) => updateContact("address", e.target.value)} />
+                        </div>
+                        <div>
+                          <label style={S.label}>Телефон</label>
+                          <input type="text" value={parsed.phone || ""} style={S.input}
+                            placeholder="+7 (495) 123-45-67"
+                            onChange={(e) => updateContact("phone", e.target.value)} />
+                        </div>
+                        <div>
+                          <label style={S.label}>Email</label>
+                          <input type="email" value={parsed.email || ""} style={S.input}
+                            placeholder="hello@luminas.ru"
+                            onChange={(e) => updateContact("email", e.target.value)} />
+                        </div>
+                        <div>
+                          <label style={S.label}>Режим работы</label>
+                          <input type="text" value={parsed.hours || ""} style={S.input}
+                            placeholder="Ежедневно: 10:00 – 20:00"
+                            onChange={(e) => updateContact("hours", e.target.value)} />
+                        </div>
+                        <div>
+                          <label style={S.label}>Instagram (ссылка)</label>
+                          <input type="url" value={parsed.instagram || ""} style={S.input}
+                            placeholder="https://instagram.com/..."
+                            onChange={(e) => updateContact("instagram", e.target.value)} />
+                        </div>
+                        <div>
+                          <label style={S.label}>Telegram (ссылка)</label>
+                          <input type="url" value={parsed.telegram || ""} style={S.input}
+                            placeholder="https://t.me/..."
+                            onChange={(e) => updateContact("telegram", e.target.value)} />
+                        </div>
+                      </div>
+                      <button onClick={() => savePage("contacts")} style={{ ...S.btnPrimary, gap: 7 }}>
+                        <Save size={15} /> Сохранить контактные данные
+                      </button>
+                    </div>
+                  );
+                })() : (
+                  <p style={{ color: C.textMuted, fontSize: "0.875rem" }}>Загрузка...</p>
+                )}
+              </div>
+            </div>
+
           </div>
         )}
       </div>

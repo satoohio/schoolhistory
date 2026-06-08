@@ -114,7 +114,7 @@ export default function About() {
               marginBottom: 14,
             }}
           >
-            О студии LUMINAS
+            {page?.title || "О студии LUMINAS"}
           </h1>
           <p style={{ color: "rgba(245,239,230,0.45)", fontSize: "1rem", maxWidth: 460, margin: "0 auto" }}>
             8 лет создаём снимки, которые вы будете хранить всю жизнь
