@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { GraduationCap, Mail, Phone, MapPin } from "lucide-react";
+import { Aperture, Mail, Phone, MapPin, ExternalLink } from "lucide-react";
 
 export default function Footer() {
   return (
     <footer
-      style={{ background: "#0f172a", color: "#94a3b8", marginTop: "auto" }}
+      style={{ background: "#110e08", color: "#7a6a56", marginTop: "auto" }}
     >
       <div className="wrap" style={{ padding: "56px 24px 0" }}>
         <div
@@ -29,43 +29,67 @@ export default function Footer() {
                 style={{
                   width: 36,
                   height: 36,
-                  background: "#2563eb",
+                  background: "#1e1810",
                   borderRadius: 10,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  border: "1px solid #2e2418",
                 }}
               >
-                <GraduationCap size={19} color="#fff" />
+                <Aperture size={19} color="#b5702a" />
               </div>
               <span
-                style={{ color: "#f8fafc", fontWeight: 700, fontSize: "1rem" }}
+                style={{ color: "#f5efe6", fontWeight: 800, fontSize: "1.1rem", letterSpacing: "-0.03em" }}
               >
-                Гимназия №11
+                LUMINAS
               </span>
             </div>
             <p
               style={{
                 fontSize: "0.875rem",
                 lineHeight: 1.7,
-                color: "#64748b",
+                color: "#5a4e3e",
+                maxWidth: 220,
               }}
             >
-              Место, где знания встречаются с вдохновением и каждый ребёнок
-              раскрывает свой талант.
+              Фотостудия, где каждый кадр становится историей. Свадьбы, школьные
+              и личные фотосессии.
             </p>
+            <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  width: 34,
+                  height: 34,
+                  background: "#1e1810",
+                  border: "1px solid #2e2418",
+                  borderRadius: 8,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "border-color 0.2s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#b5702a")}
+                onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#2e2418")}
+              >
+                <ExternalLink size={15} color="#b5702a" />
+              </a>
+            </div>
           </div>
 
           {/* Links */}
           <div>
             <h3
               style={{
-                color: "#f1f5f9",
+                color: "#c9b89e",
                 fontWeight: 600,
-                fontSize: "0.9rem",
+                fontSize: "0.8rem",
                 marginBottom: 16,
                 textTransform: "uppercase",
-                letterSpacing: "0.06em",
+                letterSpacing: "0.08em",
               }}
             >
               Навигация
@@ -81,17 +105,54 @@ export default function Footer() {
               {[
                 ["/", "Главная"],
                 ["/gallery", "Галерея"],
-                ["/about", "О Гимназии №11"],
+                ["/about", "О студии"],
                 ["/contacts", "Контакты"],
               ].map(([to, label]) => (
                 <li key={to}>
                   <Link
                     to={to}
-                    style={{ fontSize: "0.875rem", transition: "color 0.15s" }}
-                    onMouseEnter={(e) => (e.target.style.color = "#60a5fa")}
-                    onMouseLeave={(e) => (e.target.style.color = "#94a3b8")}
+                    style={{ fontSize: "0.875rem", transition: "color 0.15s", color: "#7a6a56" }}
+                    onMouseEnter={(e) => (e.target.style.color = "#b5702a")}
+                    onMouseLeave={(e) => (e.target.style.color = "#7a6a56")}
                   >
                     {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Services */}
+          <div>
+            <h3
+              style={{
+                color: "#c9b89e",
+                fontWeight: 600,
+                fontSize: "0.8rem",
+                marginBottom: 16,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+              }}
+            >
+              Услуги
+            </h3>
+            <ul
+              style={{
+                listStyle: "none",
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+              }}
+            >
+              {["Свадебная съёмка", "Школьные фотосессии", "Личные портреты", "Семейная съёмка"].map((s) => (
+                <li key={s}>
+                  <Link
+                    to="/gallery"
+                    style={{ fontSize: "0.875rem", transition: "color 0.15s", color: "#7a6a56" }}
+                    onMouseEnter={(e) => (e.target.style.color = "#b5702a")}
+                    onMouseLeave={(e) => (e.target.style.color = "#7a6a56")}
+                  >
+                    {s}
                   </Link>
                 </li>
               ))}
@@ -102,12 +163,12 @@ export default function Footer() {
           <div>
             <h3
               style={{
-                color: "#f1f5f9",
+                color: "#c9b89e",
                 fontWeight: 600,
-                fontSize: "0.9rem",
+                fontSize: "0.8rem",
                 marginBottom: 16,
                 textTransform: "uppercase",
-                letterSpacing: "0.06em",
+                letterSpacing: "0.08em",
               }}
             >
               Контакты
@@ -121,9 +182,9 @@ export default function Footer() {
               }}
             >
               {[
-                [MapPin, "Анжеро-Судженск, ул. Ленина, 10"],
-                [Phone, "+7 (38453) 6-50-10"],
-                [Mail, "school@example.ru"],
+                [MapPin, "г. Москва, ул. Арбат, 12"],
+                [Phone, "+7 (495) 123-45-67"],
+                [Mail, "hello@luminas.ru"],
               ].map(([Icon, text]) => (
                 <li
                   key={text}
@@ -131,7 +192,7 @@ export default function Footer() {
                 >
                   <Icon
                     size={14}
-                    color="#3b82f6"
+                    color="#b5702a"
                     style={{ marginTop: 2, flexShrink: 0 }}
                   />
                   <span style={{ fontSize: "0.875rem", lineHeight: 1.5 }}>
@@ -145,14 +206,21 @@ export default function Footer() {
 
         <div
           style={{
-            borderTop: "1px solid #1e293b",
+            borderTop: "1px solid #1e1810",
             padding: "20px 0",
-            textAlign: "center",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 8,
             fontSize: "0.8rem",
-            color: "#475569",
+            color: "#3d3326",
           }}
         >
-          © {new Date().getFullYear()} Гимназия №11. Все права защищены.
+          <span>© {new Date().getFullYear()} LUMINAS Studio. Все права защищены.</span>
+          <span style={{ color: "#b5702a", fontWeight: 500, letterSpacing: "0.05em" }}>
+            Свет. Момент. Вечность.
+          </span>
         </div>
       </div>
     </footer>

@@ -4,11 +4,12 @@ import { useAuth } from "../context/AuthContext";
 import {
   Menu,
   X,
-  GraduationCap,
+  Camera,
   LogOut,
   Settings,
   User,
   ChevronDown,
+  Aperture,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -42,9 +43,12 @@ export default function Navbar() {
   const links = [
     { to: "/", label: "Главная" },
     { to: "/gallery", label: "Галерея" },
-    { to: "/about", label: "О Гимназии №11" },
+    { to: "/about", label: "О студии" },
     { to: "/contacts", label: "Контакты" },
   ];
+
+  const GOLD = "#b5702a";
+  const GOLD_BG = "#fdf5ec";
 
   return (
     <nav
@@ -54,11 +58,11 @@ export default function Navbar() {
         left: 0,
         right: 0,
         zIndex: 100,
-        background: scrolled ? "#fff" : "rgba(255,255,255,0.96)",
+        background: scrolled ? "rgba(250,248,245,0.97)" : "rgba(250,248,245,0.97)",
         boxShadow: scrolled
-          ? "0 2px 16px rgba(0,0,0,0.10)"
-          : "0 1px 0 rgba(0,0,0,0.07)",
-        backdropFilter: "blur(12px)",
+          ? "0 2px 20px rgba(0,0,0,0.10)"
+          : "0 1px 0 rgba(181,112,42,0.12)",
+        backdropFilter: "blur(16px)",
         transition: "box-shadow 0.3s",
       }}
     >
@@ -78,28 +82,29 @@ export default function Navbar() {
             display: "flex",
             alignItems: "center",
             gap: "10px",
-            fontWeight: 700,
-            fontSize: "1.1rem",
-            color: "#1d4ed8",
+            fontWeight: 800,
+            fontSize: "1.2rem",
+            color: "#1a1208",
             marginRight: "8px",
             flexShrink: 0,
+            letterSpacing: "-0.03em",
           }}
         >
           <div
             style={{
               width: 36,
               height: 36,
-              background: "#1d4ed8",
+              background: "#1a1208",
               borderRadius: 10,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <GraduationCap size={19} color="#fff" />
+            <Aperture size={19} color={GOLD} />
           </div>
-          <span style={{ display: "none" }} className="logo-text">
-            Гимназия №11
+          <span className="logo-text">
+            LUMINAS
           </span>
         </Link>
 
@@ -116,18 +121,18 @@ export default function Navbar() {
               style={({ isActive }) => ({
                 padding: "7px 14px",
                 borderRadius: 9,
-                fontSize: "0.9rem",
+                fontSize: "0.875rem",
                 fontWeight: 500,
-                color: isActive ? "#1d4ed8" : "#475569",
-                background: isActive ? "#eff6ff" : "transparent",
+                color: isActive ? GOLD : "#4a3f32",
+                background: isActive ? GOLD_BG : "transparent",
                 transition: "all 0.15s",
               })}
               onMouseEnter={(e) => {
-                if (!e.currentTarget.style.background.includes("eff6ff"))
-                  e.currentTarget.style.background = "#f8fafc";
+                if (!e.currentTarget.style.background.includes("fdf5ec"))
+                  e.currentTarget.style.background = "#f5f0e8";
               }}
               onMouseLeave={(e) => {
-                if (!e.currentTarget.style.background.includes("eff6ff"))
+                if (!e.currentTarget.style.background.includes("fdf5ec"))
                   e.currentTarget.style.background = "transparent";
               }}
             >
@@ -156,7 +161,7 @@ export default function Navbar() {
                   gap: "8px",
                   padding: "7px 12px",
                   borderRadius: 10,
-                  border: "1.5px solid #e2e8f0",
+                  border: "1.5px solid #e5ddd3",
                   background: "#fff",
                   cursor: "pointer",
                   fontSize: "0.875rem",
@@ -168,14 +173,14 @@ export default function Navbar() {
                   style={{
                     width: 28,
                     height: 28,
-                    background: "#eff6ff",
+                    background: GOLD_BG,
                     borderRadius: "50%",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
-                  <User size={14} color="#1d4ed8" />
+                  <User size={14} color={GOLD} />
                 </div>
                 {user.name}
                 <ChevronDown size={13} color="#94a3b8" />
@@ -190,7 +195,7 @@ export default function Navbar() {
                     background: "#fff",
                     borderRadius: 12,
                     boxShadow: "0 8px 30px rgba(0,0,0,0.13)",
-                    border: "1px solid #f1f5f9",
+                    border: "1px solid #f0ebe3",
                     overflow: "hidden",
                     zIndex: 200,
                   }}
@@ -198,7 +203,7 @@ export default function Navbar() {
                   <div
                     style={{
                       padding: "10px 14px",
-                      borderBottom: "1px solid #f1f5f9",
+                      borderBottom: "1px solid #f0ebe3",
                       fontSize: "0.8rem",
                       color: "#94a3b8",
                     }}
@@ -218,7 +223,7 @@ export default function Navbar() {
                         color: "#374151",
                       }}
                       onMouseEnter={(e) =>
-                        (e.currentTarget.style.background = "#f8fafc")
+                        (e.currentTarget.style.background = "#faf8f5")
                       }
                       onMouseLeave={(e) =>
                         (e.currentTarget.style.background = "transparent")
@@ -263,8 +268,8 @@ export default function Navbar() {
                   borderRadius: 10,
                   fontSize: "0.875rem",
                   fontWeight: 500,
-                  color: "#374151",
-                  border: "1.5px solid #e2e8f0",
+                  color: "#4a3f32",
+                  border: "1.5px solid #e5ddd3",
                   background: "#fff",
                 }}
               >
@@ -278,10 +283,10 @@ export default function Navbar() {
                   fontSize: "0.875rem",
                   fontWeight: 600,
                   color: "#fff",
-                  background: "#1d4ed8",
+                  background: "#1a1208",
                 }}
               >
-                Регистрация
+                Записаться
               </Link>
             </>
           )}
@@ -297,7 +302,7 @@ export default function Navbar() {
             border: "none",
             background: "none",
             cursor: "pointer",
-            color: "#374151",
+            color: "#1a1208",
           }}
         >
           {mobileOpen ? <X size={22} /> : <Menu size={22} />}
@@ -308,8 +313,8 @@ export default function Navbar() {
       {mobileOpen && (
         <div
           style={{
-            borderTop: "1px solid #f1f5f9",
-            background: "#fff",
+            borderTop: "1px solid #ede9e2",
+            background: "#faf8f5",
             padding: "12px 16px 16px",
           }}
         >
@@ -326,8 +331,8 @@ export default function Navbar() {
                 marginBottom: 2,
                 fontSize: "0.9rem",
                 fontWeight: 500,
-                color: isActive ? "#1d4ed8" : "#374151",
-                background: isActive ? "#eff6ff" : "transparent",
+                color: isActive ? GOLD : "#4a3f32",
+                background: isActive ? GOLD_BG : "transparent",
               })}
             >
               {l.label}
@@ -335,7 +340,7 @@ export default function Navbar() {
           ))}
           <div
             style={{
-              borderTop: "1px solid #f1f5f9",
+              borderTop: "1px solid #ede9e2",
               marginTop: 8,
               paddingTop: 12,
             }}
@@ -359,7 +364,7 @@ export default function Navbar() {
                     style={{
                       display: "block",
                       padding: "10px 14px",
-                      color: "#1d4ed8",
+                      color: GOLD,
                       fontSize: "0.875rem",
                     }}
                   >
@@ -391,11 +396,11 @@ export default function Navbar() {
                     flex: 1,
                     textAlign: "center",
                     padding: "10px",
-                    border: "1.5px solid #e2e8f0",
+                    border: "1.5px solid #e5ddd3",
                     borderRadius: 10,
                     fontSize: "0.875rem",
                     fontWeight: 500,
-                    color: "#374151",
+                    color: "#4a3f32",
                   }}
                 >
                   Войти
@@ -407,14 +412,14 @@ export default function Navbar() {
                     flex: 1,
                     textAlign: "center",
                     padding: "10px",
-                    background: "#1d4ed8",
+                    background: "#1a1208",
                     borderRadius: 10,
                     fontSize: "0.875rem",
                     fontWeight: 600,
                     color: "#fff",
                   }}
                 >
-                  Регистрация
+                  Записаться
                 </Link>
               </div>
             )}

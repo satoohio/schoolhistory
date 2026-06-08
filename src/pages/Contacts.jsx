@@ -1,41 +1,43 @@
-import { useState, useEffect } from "react";
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle, AlertCircle } from "lucide-react";
+import { useState } from "react";
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle, AlertCircle, ExternalLink, Share2 } from "lucide-react";
 
 export default function Contacts() {
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [formData, setFormData] = useState({ name: "", phone: "", service: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
-  const [submitResult, setSubmitResult] = useState(null); // { success: boolean, message: string }
+  const [submitResult, setSubmitResult] = useState(null);
 
   const info = [
     {
       icon: MapPin,
-      label: "Адрес",
-      value: "г. Москва, ул. Школьная, д. 1",
-      color: "#3b82f6",
-      bg: "#eff6ff",
+      label: "Студия",
+      value: "г. Москва, ул. Арбат, 12",
+      color: "#b5702a",
+      bg: "#fdf5ec",
     },
     {
       icon: Phone,
       label: "Телефон",
-      value: "+7 (495) 000-00-00",
-      color: "#10b981",
+      value: "+7 (495) 123-45-67",
+      color: "#2ea87e",
       bg: "#ecfdf5",
     },
     {
       icon: Mail,
       label: "Email",
-      value: "school@example.ru",
-      color: "#8b5cf6",
-      bg: "#f5f3ff",
+      value: "hello@luminas.ru",
+      color: "#7c5cbf",
+      bg: "#f5f0ff",
     },
     {
       icon: Clock,
       label: "Режим работы",
-      value: "Пн–Пт: 8:00 – 18:00",
-      color: "#f59e0b",
-      bg: "#fffbeb",
+      value: "Ежедневно: 10:00 – 20:00",
+      color: "#e05a7a",
+      bg: "#fff0f3",
     },
   ];
+
+  const services = ["Свадебная съёмка", "Школьная фотосессия", "Личный портрет", "Семейная съёмка", "Другое"];
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -52,12 +54,12 @@ export default function Contacts() {
       const data = await response.json();
 
       if (response.ok) {
-        setSubmitResult({ success: true, message: data.message || "Сообщение отправлено!" });
-        setFormData({ name: "", email: "", message: "" });
+        setSubmitResult({ success: true, message: data.message || "Заявка отправлена! Мы свяжемся с вами в течение часа." });
+        setFormData({ name: "", phone: "", service: "", message: "" });
       } else {
         setSubmitResult({ success: false, message: data.error || "Ошибка при отправке" });
       }
-    } catch (err) {
+    } catch {
       setSubmitResult({ success: false, message: "Ошибка сети. Попробуйте позже." });
     } finally {
       setSubmitting(false);
@@ -69,36 +71,51 @@ export default function Contacts() {
       {/* Header */}
       <div
         style={{
-          background: "linear-gradient(135deg, #0f4c75 0%, #1b6ca8 100%)",
-          padding: "64px 0 60px",
+          background: "linear-gradient(160deg, #0d0b08 0%, #1a1208 60%, #241a0d 100%)",
+          padding: "72px 0 68px",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        <div className="wrap" style={{ textAlign: "center" }}>
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "60%",
+            transform: "translateY(-50%)",
+            width: 280,
+            height: 280,
+            background: "radial-gradient(circle, rgba(181,112,42,0.10) 0%, transparent 70%)",
+            borderRadius: "50%",
+            pointerEvents: "none",
+          }}
+        />
+        <div className="wrap" style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
           <div
             style={{
-              fontSize: "0.8rem",
+              fontSize: "0.78rem",
               fontWeight: 600,
-              color: "#7dd3fc",
+              color: "#b5702a",
               textTransform: "uppercase",
               letterSpacing: "0.1em",
-              marginBottom: 12,
+              marginBottom: 14,
             }}
           >
-            Мы всегда на связи
+            Запись на съёмку
           </div>
           <h1
             style={{
-              fontSize: "2.4rem",
+              fontSize: "2.6rem",
               fontWeight: 800,
-              color: "#fff",
-              letterSpacing: "-0.02em",
-              marginBottom: 12,
+              color: "#f5efe6",
+              letterSpacing: "-0.025em",
+              marginBottom: 14,
             }}
           >
-            Контакты
+            Свяжитесь с нами
           </h1>
-          <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "1rem" }}>
-            Ответим на все ваши вопросы
+          <p style={{ color: "rgba(245,239,230,0.40)", fontSize: "1rem" }}>
+            Ответим в течение часа и обсудим детали вашей съёмки
           </p>
         </div>
       </div>
@@ -119,10 +136,10 @@ export default function Contacts() {
               key={label}
               className="card"
               style={{
-                padding: "24px",
+                padding: "22px",
                 display: "flex",
                 alignItems: "flex-start",
-                gap: 16,
+                gap: 14,
               }}
             >
               <div
@@ -144,7 +161,7 @@ export default function Contacts() {
                   style={{
                     fontSize: "0.73rem",
                     fontWeight: 600,
-                    color: "#94a3b8",
+                    color: "#9a8a76",
                     textTransform: "uppercase",
                     letterSpacing: "0.07em",
                     marginBottom: 4,
@@ -155,7 +172,7 @@ export default function Contacts() {
                 <div
                   style={{
                     fontWeight: 600,
-                    color: "#1e293b",
+                    color: "#1a1208",
                     fontSize: "0.95rem",
                   }}
                 >
@@ -166,20 +183,58 @@ export default function Contacts() {
           ))}
         </div>
 
-        {/* Contact form */}
+        {/* Social quick links */}
+        <div
+          className="card"
+          style={{ padding: "20px 24px", marginBottom: 28, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}
+        >
+          <span style={{ fontSize: "0.875rem", fontWeight: 600, color: "#4a3f32" }}>Также пишите нам:</span>
+          <div style={{ display: "flex", gap: 10 }}>
+            {[
+              { icon: ExternalLink, label: "Instagram", color: "#c13584" },
+              { icon: Share2, label: "Telegram", color: "#2AABEE" },
+            ].map(({ icon: Icon, label, color }) => (
+              <a
+                key={label}
+                href="#"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "7px 14px",
+                  borderRadius: 8,
+                  border: "1.5px solid #ede9e2",
+                  fontSize: "0.82rem",
+                  fontWeight: 600,
+                  color,
+                  background: "#fff",
+                  transition: "border-color 0.15s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.borderColor = color)}
+                onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#ede9e2")}
+              >
+                <Icon size={15} /> {label}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Booking form */}
         <div className="card" style={{ padding: "36px 40px" }}>
           <h2
             style={{
               fontSize: "1.3rem",
               fontWeight: 700,
-              color: "#0f172a",
-              marginBottom: 24,
+              color: "#1a1208",
+              marginBottom: 6,
             }}
           >
-            Написать нам
+            Оставить заявку
           </h2>
+          <p style={{ color: "#9a8a76", fontSize: "0.875rem", marginBottom: 28 }}>
+            Укажите удобное время — перезвоним и всё обсудим
+          </p>
 
-          {/* Result message */}
           {submitResult && (
             <div
               style={{
@@ -215,28 +270,16 @@ export default function Contacts() {
             onSubmit={handleSubmit}
           >
             <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 16,
-              }}
+              style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
               className="form-row"
             >
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: "0.85rem",
-                    fontWeight: 600,
-                    color: "#374151",
-                    marginBottom: 7,
-                  }}
-                >
+                <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#4a3f32", marginBottom: 7 }}>
                   Ваше имя
                 </label>
                 <input
                   type="text"
-                  placeholder="Иван Иванов"
+                  placeholder="Анна Иванова"
                   required
                   className="input"
                   value={formData.name}
@@ -245,44 +288,45 @@ export default function Contacts() {
                 />
               </div>
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: "0.85rem",
-                    fontWeight: 600,
-                    color: "#374151",
-                    marginBottom: 7,
-                  }}
-                >
-                  Email
+                <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#4a3f32", marginBottom: 7 }}>
+                  Телефон
                 </label>
                 <input
-                  type="email"
-                  placeholder="ivan@example.ru"
+                  type="tel"
+                  placeholder="+7 (___) ___-__-__"
                   required
                   className="input"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   disabled={submitting}
                 />
               </div>
             </div>
             <div>
-              <label
-                style={{
-                  display: "block",
-                  fontSize: "0.85rem",
-                  fontWeight: 600,
-                  color: "#374151",
-                  marginBottom: 7,
-                }}
+              <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#4a3f32", marginBottom: 7 }}>
+                Вид съёмки
+              </label>
+              <select
+                className="input"
+                required
+                value={formData.service}
+                onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                disabled={submitting}
+                style={{ cursor: "pointer" }}
               >
-                Сообщение
+                <option value="">Выберите категорию...</option>
+                {services.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#4a3f32", marginBottom: 7 }}>
+                Пожелания и детали
               </label>
               <textarea
-                rows={5}
-                placeholder="Ваш вопрос или предложение..."
-                required
+                rows={4}
+                placeholder="Расскажите о своей идее, желаемой дате, месте съёмки..."
                 className="input"
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -290,15 +334,11 @@ export default function Contacts() {
               />
             </div>
             <div>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="btn-primary"
                 disabled={submitting}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
                   opacity: submitting ? 0.7 : 1,
                   cursor: submitting ? "not-allowed" : "pointer",
                 }}
@@ -312,13 +352,14 @@ export default function Contacts() {
                       borderTopColor: "#fff",
                       borderRadius: "50%",
                       animation: "spin 0.8s linear infinite",
+                      display: "inline-block",
                     }} />
                     Отправка...
                   </>
                 ) : (
                   <>
-                    <Send size={18} />
-                    Отправить сообщение
+                    <Send size={17} />
+                    Отправить заявку
                   </>
                 )}
               </button>

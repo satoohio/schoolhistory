@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Images } from "lucide-react";
+import { Search, Camera } from "lucide-react";
 import Lightbox from "../components/Lightbox";
 
 export default function Gallery() {
@@ -21,12 +21,12 @@ export default function Gallery() {
 
   useEffect(() => {
     setLoading(true);
-    const params = new URLSearchParams({ 
-      limit: String(limit), 
-      offset: String(offset) 
+    const params = new URLSearchParams({
+      limit: String(limit),
+      offset: String(offset),
     });
     if (activeCategory !== "all") params.set("category", activeCategory);
-    
+
     fetch(`/api/photos?${params}`)
       .then((r) => r.json())
       .then((data) => {
@@ -34,7 +34,7 @@ export default function Gallery() {
           if (offset === 0) {
             setPhotos(data);
           } else {
-            setPhotos(prev => [...prev, ...data]);
+            setPhotos((prev) => [...prev, ...data]);
           }
           setTotal(data.length);
         }
@@ -45,22 +45,18 @@ export default function Gallery() {
   const filtered = photos.filter(
     (p) =>
       p.title.toLowerCase().includes(search.toLowerCase()) ||
-      (p.description || "").toLowerCase().includes(search.toLowerCase()),
+      (p.description || "").toLowerCase().includes(search.toLowerCase())
   );
 
   const canLoadMore = total === limit;
 
   function loadMore() {
-    setOffset(prev => prev + limit);
-  }
-
-  function resetGallery() {
-    setOffset(0);
-    setPhotos([]);
+    setOffset((prev) => prev + limit);
   }
 
   useEffect(() => {
-    resetGallery();
+    setOffset(0);
+    setPhotos([]);
   }, [activeCategory, search]);
 
   return (
@@ -68,16 +64,32 @@ export default function Gallery() {
       {/* Header */}
       <div
         style={{
-          background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
-          padding: "60px 0 56px",
+          background: "linear-gradient(160deg, #0d0b08 0%, #1a1208 60%, #241a0d 100%)",
+          padding: "64px 0 60px",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        <div className="wrap" style={{ textAlign: "center" }}>
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            right: "10%",
+            transform: "translateY(-50%)",
+            width: 250,
+            height: 250,
+            background: "radial-gradient(circle, rgba(181,112,42,0.10) 0%, transparent 70%)",
+            borderRadius: "50%",
+            pointerEvents: "none",
+          }}
+        />
+        <div className="wrap" style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
           <div
             style={{
               width: 52,
               height: 52,
-              background: "#2563eb",
+              background: "rgba(181,112,42,0.12)",
+              border: "1px solid rgba(181,112,42,0.22)",
               borderRadius: 14,
               display: "flex",
               alignItems: "center",
@@ -85,21 +97,21 @@ export default function Gallery() {
               margin: "0 auto 18px",
             }}
           >
-            <Images size={24} color="#fff" />
+            <Camera size={24} color="#b5702a" />
           </div>
           <h1
             style={{
-              fontSize: "2.4rem",
+              fontSize: "2.6rem",
               fontWeight: 800,
-              color: "#f8fafc",
-              letterSpacing: "-0.02em",
-              marginBottom: 8,
+              color: "#f5efe6",
+              letterSpacing: "-0.025em",
+              marginBottom: 10,
             }}
           >
-            Фотогалерея
+            Портфолио
           </h1>
-          <p style={{ color: "#64748b", fontSize: "1rem" }}>
-            Яркие моменты жизни нашей Гимназии
+          <p style={{ color: "rgba(245,239,230,0.40)", fontSize: "1rem" }}>
+            Свадьбы · Школьные · Личные фотосессии
           </p>
         </div>
       </div>
@@ -122,7 +134,7 @@ export default function Gallery() {
                 left: 14,
                 top: "50%",
                 transform: "translateY(-50%)",
-                color: "#94a3b8",
+                color: "#9a8a76",
               }}
             />
             <input
@@ -177,7 +189,7 @@ export default function Gallery() {
                 style={{
                   marginBottom: 14,
                   borderRadius: 14,
-                  background: "#e2e8f0",
+                  background: "#ede9e2",
                   aspectRatio: i % 3 === 0 ? "1/1.4" : "1/1",
                   animation: "pulse 1.5s infinite",
                 }}
@@ -186,16 +198,16 @@ export default function Gallery() {
           </div>
         ) : filtered.length === 0 ? (
           <div style={{ textAlign: "center", padding: "80px 0" }}>
-            <Images
+            <Camera
               size={52}
-              style={{ color: "#cbd5e1", margin: "0 auto 16px" }}
+              style={{ color: "#d4c4b0", margin: "0 auto 16px" }}
             />
             <p
-              style={{ color: "#94a3b8", fontSize: "1.05rem", fontWeight: 500 }}
+              style={{ color: "#9a8a76", fontSize: "1.05rem", fontWeight: 500 }}
             >
               Фотографий пока нет
             </p>
-            <p style={{ color: "#cbd5e1", fontSize: "0.875rem", marginTop: 6 }}>
+            <p style={{ color: "#c4b4a0", fontSize: "0.875rem", marginTop: 6 }}>
               Попробуйте изменить фильтр
             </p>
           </div>
@@ -204,7 +216,7 @@ export default function Gallery() {
             <p
               style={{
                 fontSize: "0.82rem",
-                color: "#94a3b8",
+                color: "#9a8a76",
                 marginBottom: 18,
               }}
             >
@@ -257,7 +269,7 @@ export default function Gallery() {
                         right: 8,
                         width: 22,
                         height: 22,
-                        background: "#fbbf24",
+                        background: "#b5702a",
                         borderRadius: "50%",
                         display: "flex",
                         alignItems: "center",
@@ -276,7 +288,6 @@ export default function Gallery() {
           </>
         )}
 
-        {/* Load More Button */}
         {canLoadMore && !loading && filtered.length > 0 && (
           <div style={{ textAlign: "center", marginTop: 32 }}>
             <button onClick={loadMore} className="btn-primary">

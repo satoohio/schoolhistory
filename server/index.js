@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.js'
 import photoRoutes from './routes/photos.js'
 import pageRoutes from './routes/pages.js'
 import adminRoutes from './routes/admin.js'
+import contactRoutes from './routes/contacts.js'
 import pool from './db.js'
 
 // Load environment variables
@@ -26,6 +27,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/photos', photoRoutes)
 app.use('/api/pages', pageRoutes)
 app.use('/api/admin', adminRoutes)
+app.use('/api/contacts', contactRoutes)
 
 app.get('/api/health', (req, res) => res.json({ ok: true }))
 

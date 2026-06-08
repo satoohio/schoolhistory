@@ -2,11 +2,14 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Images,
-  BookOpen,
-  Trophy,
-  Users,
+  Heart,
+  GraduationCap,
+  User,
   ArrowRight,
+  Camera,
   Star,
+  Aperture,
+  Clock,
 } from "lucide-react";
 import Lightbox from "../components/Lightbox";
 
@@ -22,10 +25,37 @@ export default function Home() {
   }, []);
 
   const stats = [
-    { icon: Users, value: "1200+", label: "Учеников", color: "#3b82f6" },
-    { icon: BookOpen, value: "85", label: "Учителей", color: "#8b5cf6" },
-    { icon: Trophy, value: "200+", label: "Наград", color: "#f59e0b" },
-    { icon: Images, value: "70+", label: "Лет истории", color: "#10b981" },
+    { icon: Camera, value: "500+", label: "Фотосессий", color: "#b5702a" },
+    { icon: Heart, value: "98%", label: "Довольных клиентов", color: "#e05a7a" },
+    { icon: Clock, value: "8", label: "Лет опыта", color: "#7c5cbf" },
+    { icon: Images, value: "12K+", label: "Обработанных фото", color: "#2ea87e" },
+  ];
+
+  const services = [
+    {
+      icon: Heart,
+      title: "Свадебная съёмка",
+      desc: "Самый важный день в вашей жизни — в объективе нашего фотографа. Полное сопровождение от сборов до банкета.",
+      color: "#e05a7a",
+      bg: "#fff0f3",
+      tag: "Свадьбы",
+    },
+    {
+      icon: GraduationCap,
+      title: "Школьные фотосессии",
+      desc: "Первый звонок, выпускной, портреты для документов — сохраним каждый важный школьный момент.",
+      color: "#b5702a",
+      bg: "#fdf5ec",
+      tag: "Школьные",
+    },
+    {
+      icon: User,
+      title: "Личные портреты",
+      desc: "Индивидуальная или семейная фотосессия. Деловые портреты, творческие образы, детская съёмка.",
+      color: "#7c5cbf",
+      bg: "#f5f0ff",
+      tag: "Личное",
+    },
   ];
 
   return (
@@ -33,24 +63,36 @@ export default function Home() {
       {/* ── Hero ─────────────────────────────────────────── */}
       <section
         style={{
-          background:
-            "linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #4f46e5 100%)",
-          minHeight: "88vh",
+          background: "linear-gradient(160deg, #0d0b08 0%, #1a1208 55%, #241a0d 100%)",
+          minHeight: "92vh",
           display: "flex",
           alignItems: "center",
           position: "relative",
           overflow: "hidden",
         }}
       >
-        {/* dot grid */}
+        {/* subtle dot grid */}
         <div
           style={{
             position: "absolute",
             inset: 0,
-            opacity: 0.07,
+            opacity: 0.06,
             backgroundImage:
-              "radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 0)",
-            backgroundSize: "36px 36px",
+              "radial-gradient(circle, rgba(181,112,42,0.9) 1px, transparent 0)",
+            backgroundSize: "40px 40px",
+          }}
+        />
+        {/* warm glow */}
+        <div
+          style={{
+            position: "absolute",
+            top: "30%",
+            right: "8%",
+            width: 420,
+            height: 420,
+            background: "radial-gradient(circle, rgba(181,112,42,0.15) 0%, transparent 70%)",
+            borderRadius: "50%",
+            pointerEvents: "none",
           }}
         />
         {/* bottom wave */}
@@ -63,7 +105,7 @@ export default function Home() {
           >
             <path
               d="M0 80L1440 80L1440 35C1100 -5 640 75 0 18L0 80Z"
-              fill="#f8fafc"
+              fill="#faf8f5"
             />
           </svg>
         </div>
@@ -74,61 +116,66 @@ export default function Home() {
             position: "relative",
             zIndex: 1,
             padding: "80px 24px 120px",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 48,
+            alignItems: "center",
           }}
+          className="wrap hero-grid"
         >
-          <div style={{ maxWidth: 600 }}>
+          <div>
             <div
               className="fade-up"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 8,
-                background: "rgba(255,255,255,0.12)",
-                color: "#bfdbfe",
+                background: "rgba(181,112,42,0.12)",
+                color: "#d4924a",
                 padding: "6px 16px",
                 borderRadius: 999,
-                fontSize: "0.85rem",
-                fontWeight: 500,
+                fontSize: "0.82rem",
+                fontWeight: 600,
                 marginBottom: 28,
-                border: "1px solid rgba(255,255,255,0.2)",
+                border: "1px solid rgba(181,112,42,0.22)",
+                letterSpacing: "0.04em",
+                textTransform: "uppercase",
               }}
             >
-              <Star size={13} fill="#93c5fd" color="#93c5fd" />
-              Добро пожаловать в Гимназию №11
+              <Aperture size={12} />
+              Фотостудия в Москве
             </div>
 
             <h1
               className="fade-up"
               style={{
-                fontSize: "clamp(2.4rem, 5vw, 3.8rem)",
+                fontSize: "clamp(2.6rem, 5.5vw, 4.2rem)",
                 fontWeight: 800,
-                color: "#fff",
-                lineHeight: 1.15,
+                color: "#f5efe6",
+                lineHeight: 1.1,
                 marginBottom: 20,
-                letterSpacing: "-0.02em",
+                letterSpacing: "-0.03em",
                 animationDelay: "0.05s",
               }}
             >
-              Знания.
+              Каждый кадр —
               <br />
-              <span style={{ color: "#fbbf24" }}>Творчество.</span>
-              <br />
-              Будущее.
+              <span style={{ color: "#b5702a" }}>это история.</span>
             </h1>
 
             <p
               className="fade-up"
               style={{
                 fontSize: "1.05rem",
-                color: "rgba(255,255,255,0.78)",
-                lineHeight: 1.7,
+                color: "rgba(245,239,230,0.60)",
+                lineHeight: 1.75,
                 marginBottom: 36,
-                maxWidth: 480,
+                maxWidth: 460,
                 animationDelay: "0.1s",
               }}
             >
-              Мы создаём среду, где каждый ученик раскрывает свой потенциал и
-              готовится к вызовам современного мира.
+              Свадебная, школьная и личная фотосъёмка. Создаём снимки,
+              которые хочется рассматривать снова и снова.
             </p>
 
             <div
@@ -143,13 +190,97 @@ export default function Home() {
               <Link
                 to="/gallery"
                 className="btn-primary"
-                style={{ background: "#fbbf24", color: "#1e293b" }}
               >
-                <Images size={17} /> Смотреть галерею
+                <Camera size={17} /> Смотреть галерею
               </Link>
-              <Link to="/about" className="btn-outline">
-                О нашей Гимназии №11 <ArrowRight size={16} />
+              <Link to="/contacts" className="btn-outline">
+                Записаться на съёмку <ArrowRight size={16} />
               </Link>
+            </div>
+
+            {/* mini trust row */}
+            <div
+              className="fade-up"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+                marginTop: 36,
+                animationDelay: "0.2s",
+              }}
+            >
+              <div style={{ display: "flex" }}>
+                {["#f59e0b","#f59e0b","#f59e0b","#f59e0b","#f59e0b"].map((c, i) => (
+                  <Star key={i} size={14} fill={c} color={c} style={{ marginLeft: i ? -2 : 0 }} />
+                ))}
+              </div>
+              <span style={{ color: "rgba(245,239,230,0.45)", fontSize: "0.85rem" }}>
+                500+ довольных клиентов
+              </span>
+            </div>
+          </div>
+
+          {/* right: camera visual */}
+          <div
+            className="hero-visual"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <div
+              style={{
+                width: 280,
+                height: 280,
+                borderRadius: "50%",
+                background: "rgba(181,112,42,0.08)",
+                border: "1px solid rgba(181,112,42,0.15)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+              }}
+            >
+              <div
+                style={{
+                  width: 200,
+                  height: 200,
+                  borderRadius: "50%",
+                  background: "rgba(181,112,42,0.10)",
+                  border: "1px solid rgba(181,112,42,0.20)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Aperture size={80} color="#b5702a" strokeWidth={1} />
+              </div>
+              {/* floating badges */}
+              {[
+                { label: "Свадьбы", top: "10%", right: "-10%" },
+                { label: "Школьные", bottom: "15%", left: "-12%" },
+                { label: "Личное", top: "55%", right: "-18%" },
+              ].map(({ label, ...pos }) => (
+                <div
+                  key={label}
+                  style={{
+                    position: "absolute",
+                    ...pos,
+                    background: "#1e1810",
+                    border: "1px solid rgba(181,112,42,0.25)",
+                    color: "#d4924a",
+                    padding: "6px 14px",
+                    borderRadius: 999,
+                    fontSize: "0.78rem",
+                    fontWeight: 600,
+                    whiteSpace: "nowrap",
+                    letterSpacing: "0.03em",
+                  }}
+                >
+                  {label}
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -193,14 +324,14 @@ export default function Home() {
                 style={{
                   fontSize: "1.6rem",
                   fontWeight: 800,
-                  color: "#1e293b",
+                  color: "#1a1208",
                   lineHeight: 1,
                 }}
               >
                 {value}
               </div>
               <div
-                style={{ fontSize: "0.82rem", color: "#64748b", marginTop: 4 }}
+                style={{ fontSize: "0.82rem", color: "#8a7a66", marginTop: 4 }}
               >
                 {label}
               </div>
@@ -209,119 +340,217 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Featured gallery ─────────────────────────────── */}
-      {featured.length > 0 && (
-        <section className="section wrap">
+      {/* ── Services ─────────────────────────────────────── */}
+      <section className="section wrap">
+        <div style={{ textAlign: "center", marginBottom: 40 }}>
           <div
             style={{
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "space-between",
-              marginBottom: 28,
-              flexWrap: "wrap",
-              gap: 12,
+              fontSize: "0.78rem",
+              fontWeight: 600,
+              color: "#b5702a",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              marginBottom: 8,
             }}
           >
-            <div>
-              <div
-                style={{
-                  fontSize: "0.8rem",
-                  fontWeight: 600,
-                  color: "#3b82f6",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                  marginBottom: 6,
-                }}
-              >
-                Гимнастическая жизнь
-              </div>
-              <h2
-                style={{
-                  fontSize: "1.8rem",
-                  fontWeight: 800,
-                  color: "#0f172a",
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                Яркие моменты
-              </h2>
-            </div>
+            Что мы снимаем
+          </div>
+          <h2
+            style={{
+              fontSize: "2rem",
+              fontWeight: 800,
+              color: "#1a1208",
+              letterSpacing: "-0.025em",
+            }}
+          >
+            Наши направления
+          </h2>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 20,
+          }}
+          className="services-grid"
+        >
+          {services.map(({ icon: Icon, title, desc, color, bg, tag }) => (
             <Link
               to="/gallery"
+              key={title}
+              className="card"
               style={{
+                padding: "32px 28px",
                 display: "flex",
-                alignItems: "center",
-                gap: 6,
-                color: "#1d4ed8",
-                fontSize: "0.9rem",
-                fontWeight: 500,
+                flexDirection: "column",
+                gap: 16,
+                cursor: "pointer",
+                transition: "transform 0.2s, box-shadow 0.2s",
+                textDecoration: "none",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 12px 36px rgba(0,0,0,0.10)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "";
               }}
             >
-              Вся галерея <ArrowRight size={15} />
-            </Link>
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: 14,
-            }}
-            className="featured-grid"
-          >
-            {featured.map((photo, i) => (
               <div
-                key={photo.id}
-                onClick={() => setLbIndex(i)}
                 style={{
-                  gridColumn: i === 0 ? "span 2" : "span 1",
-                  gridRow: i === 0 ? "span 2" : "span 1",
-                  borderRadius: 16,
-                  overflow: "hidden",
-                  cursor: "pointer",
-                  position: "relative",
-                  aspectRatio: i === 0 ? "4/3" : "1/1",
-                  background: "#e2e8f0",
+                  width: 52,
+                  height: 52,
+                  background: bg,
+                  borderRadius: 14,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
-                className="photo-item"
               >
-                <img
-                  src={photo.url}
-                  alt={photo.title}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-                <div className="photo-overlay">
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: 12,
-                      left: 12,
-                      right: 12,
-                    }}
-                  >
-                    <p
+                <Icon size={24} color={color} />
+              </div>
+              <div>
+                <h3
+                  style={{
+                    fontWeight: 700,
+                    fontSize: "1.05rem",
+                    color: "#1a1208",
+                    marginBottom: 8,
+                  }}
+                >
+                  {title}
+                </h3>
+                <p style={{ color: "#7a6a56", fontSize: "0.875rem", lineHeight: 1.65 }}>
+                  {desc}
+                </p>
+              </div>
+              <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: 6, color, fontSize: "0.83rem", fontWeight: 600 }}>
+                Смотреть работы <ArrowRight size={14} />
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Featured gallery ─────────────────────────────── */}
+      {featured.length > 0 && (
+        <section
+          style={{ background: "#f5f0e8", padding: "64px 0" }}
+        >
+          <div className="wrap">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-end",
+                justifyContent: "space-between",
+                marginBottom: 28,
+                flexWrap: "wrap",
+                gap: 12,
+              }}
+            >
+              <div>
+                <div
+                  style={{
+                    fontSize: "0.78rem",
+                    fontWeight: 600,
+                    color: "#b5702a",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                    marginBottom: 6,
+                  }}
+                >
+                  Избранные работы
+                </div>
+                <h2
+                  style={{
+                    fontSize: "1.8rem",
+                    fontWeight: 800,
+                    color: "#1a1208",
+                    letterSpacing: "-0.02em",
+                  }}
+                >
+                  Портфолио студии
+                </h2>
+              </div>
+              <Link
+                to="/gallery"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  color: "#b5702a",
+                  fontSize: "0.9rem",
+                  fontWeight: 600,
+                }}
+              >
+                Вся галерея <ArrowRight size={15} />
+              </Link>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: 14,
+              }}
+              className="featured-grid"
+            >
+              {featured.map((photo, i) => (
+                <div
+                  key={photo.id}
+                  onClick={() => setLbIndex(i)}
+                  style={{
+                    gridColumn: i === 0 ? "span 2" : "span 1",
+                    gridRow: i === 0 ? "span 2" : "span 1",
+                    borderRadius: 16,
+                    overflow: "hidden",
+                    cursor: "pointer",
+                    position: "relative",
+                    aspectRatio: i === 0 ? "4/3" : "1/1",
+                    background: "#ede9e2",
+                  }}
+                  className="photo-item"
+                >
+                  <img
+                    src={photo.url}
+                    alt={photo.title}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                  <div className="photo-overlay">
+                    <div
                       style={{
-                        color: "#fff",
-                        fontWeight: 600,
-                        fontSize: "0.875rem",
-                        marginBottom: 2,
+                        position: "absolute",
+                        bottom: 12,
+                        left: 12,
+                        right: 12,
                       }}
                     >
-                      {photo.title}
-                    </p>
-                    {photo.category_name && (
                       <p
                         style={{
-                          color: "rgba(255,255,255,0.7)",
-                          fontSize: "0.75rem",
+                          color: "#fff",
+                          fontWeight: 600,
+                          fontSize: "0.875rem",
+                          marginBottom: 2,
                         }}
                       >
-                        {photo.category_name}
+                        {photo.title}
                       </p>
-                    )}
+                      {photo.category_name && (
+                        <p
+                          style={{
+                            color: "rgba(255,255,255,0.7)",
+                            fontSize: "0.75rem",
+                          }}
+                        >
+                          {photo.category_name}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
       )}
@@ -329,51 +558,96 @@ export default function Home() {
       {/* ── CTA ──────────────────────────────────────────── */}
       <section
         style={{
-          background: "linear-gradient(135deg, #1d4ed8, #7c3aed)",
-          padding: "72px 0",
+          background: "linear-gradient(135deg, #110e08 0%, #1e1508 100%)",
+          padding: "80px 0",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        <div className="wrap" style={{ textAlign: "center" }}>
-          <h2
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 600,
+            height: 300,
+            background: "radial-gradient(ellipse, rgba(181,112,42,0.12) 0%, transparent 70%)",
+            pointerEvents: "none",
+          }}
+        />
+        <div className="wrap" style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
+          <div
             style={{
-              fontSize: "1.9rem",
-              fontWeight: 800,
-              color: "#fff",
-              marginBottom: 12,
-              letterSpacing: "-0.02em",
+              fontSize: "0.78rem",
+              fontWeight: 600,
+              color: "#b5702a",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              marginBottom: 14,
             }}
           >
-            Присоединяйтесь к нашему сообществу
+            Запишитесь сейчас
+          </div>
+          <h2
+            style={{
+              fontSize: "2.2rem",
+              fontWeight: 800,
+              color: "#f5efe6",
+              marginBottom: 14,
+              letterSpacing: "-0.025em",
+            }}
+          >
+            Готовы создать ваши снимки?
           </h2>
           <p
             style={{
-              color: "rgba(255,255,255,0.72)",
+              color: "rgba(245,239,230,0.45)",
               fontSize: "1rem",
-              marginBottom: 32,
+              marginBottom: 36,
               maxWidth: 440,
-              margin: "0 auto 32px",
+              margin: "0 auto 36px",
+              lineHeight: 1.7,
             }}
           >
-            Зарегистрируйтесь, чтобы получить доступ к полной галерее и новостям
-            Гимназии
+            Свяжитесь с нами — обсудим детали, выберем локацию и создадим
+            фотографии, которые вы будете хранить всю жизнь.
           </p>
-          <Link
-            to="/register"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "13px 28px",
-              background: "#fff",
-              color: "#1d4ed8",
-              fontWeight: 700,
-              borderRadius: 12,
-              fontSize: "0.95rem",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.18)",
-            }}
-          >
-            Зарегистрироваться бесплатно <ArrowRight size={17} />
-          </Link>
+          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+            <Link
+              to="/contacts"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "14px 28px",
+                background: "#b5702a",
+                color: "#fff",
+                fontWeight: 700,
+                borderRadius: 12,
+                fontSize: "0.95rem",
+              }}
+            >
+              Записаться на съёмку <ArrowRight size={17} />
+            </Link>
+            <Link
+              to="/gallery"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "14px 28px",
+                background: "rgba(255,255,255,0.07)",
+                color: "#f5efe6",
+                fontWeight: 600,
+                borderRadius: 12,
+                fontSize: "0.95rem",
+                border: "1px solid rgba(255,255,255,0.12)",
+              }}
+            >
+              <Images size={17} /> Смотреть портфолио
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -388,6 +662,11 @@ export default function Home() {
       )}
 
       <style>{`
+        @media (max-width: 900px) {
+          .hero-grid { grid-template-columns: 1fr !important; }
+          .hero-visual { display: none !important; }
+          .services-grid { grid-template-columns: 1fr !important; }
+        }
         @media (max-width: 640px) {
           .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .featured-grid { grid-template-columns: repeat(2, 1fr) !important; }

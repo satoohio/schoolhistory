@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { BookOpen, Award, Users, Heart } from "lucide-react";
+import { Camera, Award, Heart, Aperture, CheckCircle, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function About() {
   const [page, setPage] = useState(null);
@@ -12,32 +13,59 @@ export default function About() {
 
   const values = [
     {
-      icon: BookOpen,
-      title: "Знания",
-      desc: "Глубокое образование по всем предметам с упором на критическое мышление.",
-      color: "#3b82f6",
-      bg: "#eff6ff",
-    },
-    {
-      icon: Users,
-      title: "Команда",
-      desc: "Дружный коллектив учителей и учеников, работающих вместе.",
-      color: "#8b5cf6",
-      bg: "#f5f3ff",
-    },
-    {
-      icon: Award,
-      title: "Достижения",
-      desc: "Победители олимпиад, конкурсов и спортивных соревнований.",
-      color: "#f59e0b",
-      bg: "#fffbeb",
+      icon: Aperture,
+      title: "Художественный взгляд",
+      desc: "Мы не просто фотографируем — мы выстраиваем кадр так, чтобы каждый снимок рассказывал историю.",
+      color: "#b5702a",
+      bg: "#fdf5ec",
     },
     {
       icon: Heart,
-      title: "Забота",
-      desc: "Индивидуальный подход к каждому ребёнку и его развитию.",
-      color: "#ef4444",
-      bg: "#fef2f2",
+      title: "Забота о клиенте",
+      desc: "Раскрепощаем даже самых застенчивых. Съёмка проходит легко и непринуждённо.",
+      color: "#e05a7a",
+      bg: "#fff0f3",
+    },
+    {
+      icon: Award,
+      title: "Качество обработки",
+      desc: "Ретушь, цветокоррекция и художественная обработка — каждый снимок доводится до идеала.",
+      color: "#7c5cbf",
+      bg: "#f5f0ff",
+    },
+    {
+      icon: Camera,
+      title: "Профессиональное оборудование",
+      desc: "Полнокадровые камеры, портретная и репортажная оптика, студийный свет и стробоскопы.",
+      color: "#2ea87e",
+      bg: "#ecfdf5",
+    },
+  ];
+
+  const packages = [
+    {
+      name: "Базовый",
+      duration: "1–2 часа",
+      photos: "20–30 фото",
+      price: "от 5 000 ₽",
+      features: ["Одна локация", "Базовая ретушь", "Онлайн-галерея", "Срок: 7 дней"],
+      accent: false,
+    },
+    {
+      name: "Стандарт",
+      duration: "3–4 часа",
+      photos: "50–70 фото",
+      price: "от 10 000 ₽",
+      features: ["До 2 локаций", "Глубокая ретушь", "Онлайн-галерея", "Помощь со стилем", "Срок: 5 дней"],
+      accent: true,
+    },
+    {
+      name: "Премиум",
+      duration: "Полный день",
+      photos: "100+ фото",
+      price: "от 20 000 ₽",
+      features: ["Без ограничений", "Художественная обработка", "Печать 10 фото", "Видео-ролик", "Срок: 3 дня"],
+      accent: false,
     },
   ];
 
@@ -46,41 +74,55 @@ export default function About() {
       {/* Header */}
       <div
         style={{
-          background: "linear-gradient(135deg, #312e81 0%, #1d4ed8 100%)",
-          padding: "64px 0 60px",
+          background: "linear-gradient(160deg, #0d0b08 0%, #1a1208 60%, #241a0d 100%)",
+          padding: "72px 0 68px",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        <div className="wrap" style={{ textAlign: "center" }}>
+        <div
+          style={{
+            position: "absolute",
+            top: "40%",
+            right: "5%",
+            width: 300,
+            height: 300,
+            background: "radial-gradient(circle, rgba(181,112,42,0.12) 0%, transparent 70%)",
+            borderRadius: "50%",
+            pointerEvents: "none",
+          }}
+        />
+        <div className="wrap" style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
           <div
             style={{
-              fontSize: "0.8rem",
+              fontSize: "0.78rem",
               fontWeight: 600,
-              color: "#a5b4fc",
+              color: "#b5702a",
               textTransform: "uppercase",
               letterSpacing: "0.1em",
-              marginBottom: 12,
+              marginBottom: 14,
             }}
           >
-            История и миссия
+            История и философия
           </div>
           <h1
             style={{
-              fontSize: "2.4rem",
+              fontSize: "2.6rem",
               fontWeight: 800,
-              color: "#fff",
-              letterSpacing: "-0.02em",
-              marginBottom: 12,
+              color: "#f5efe6",
+              letterSpacing: "-0.025em",
+              marginBottom: 14,
             }}
           >
-            О нашей Гимназии №11
+            О студии LUMINAS
           </h1>
-          <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "1rem" }}>
-            Более 70 лет качественного образования
+          <p style={{ color: "rgba(245,239,230,0.45)", fontSize: "1rem", maxWidth: 460, margin: "0 auto" }}>
+            8 лет создаём снимки, которые вы будете хранить всю жизнь
           </p>
         </div>
       </div>
 
-      <div className="wrap-sm" style={{ padding: "56px 24px 72px" }}>
+      <div className="wrap-sm" style={{ padding: "56px 24px 0" }}>
         {/* Main text card */}
         <div
           className="card"
@@ -94,31 +136,33 @@ export default function About() {
                 <p
                   key={i}
                   style={{
-                    color: "#374151",
-                    lineHeight: 1.8,
-                    fontSize: "1.05rem",
+                    color: "#4a3f32",
+                    lineHeight: 1.85,
+                    fontSize: "1.02rem",
                     marginBottom: 16,
-                    lastChild: { marginBottom: 0 },
                   }}
                 >
                   {line}
                 </p>
               ))
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {[100, 95, 80].map((w) => (
-                <div
-                  key={w}
-                  style={{
-                    height: 18,
-                    background: "#f1f5f9",
-                    borderRadius: 6,
-                    width: `${w}%`,
-                    animation: "pulse 1.5s infinite",
-                  }}
-                />
-              ))}
-            </div>
+            <>
+              <p style={{ color: "#4a3f32", lineHeight: 1.85, fontSize: "1.02rem", marginBottom: 16 }}>
+                Студия LUMINAS основана в 2016 году фотографом Алексеем Кузнецовым. За 8 лет работы
+                мы провели более 500 фотосессий — от камерных портретов до масштабных свадебных съёмок
+                в разных городах России.
+              </p>
+              <p style={{ color: "#4a3f32", lineHeight: 1.85, fontSize: "1.02rem", marginBottom: 16 }}>
+                Наша философия проста: хорошая фотография — это не только правильный свет и выдержка.
+                Это доверие между фотографом и моделью, атмосфера на съёмке, умение поймать
+                настоящий живой момент.
+              </p>
+              <p style={{ color: "#4a3f32", lineHeight: 1.85, fontSize: "1.02rem" }}>
+                Мы работаем в трёх направлениях: свадебная съёмка, школьные фотосессии и
+                индивидуальные/семейные портреты. Каждое из них требует своего подхода —
+                и для каждого у нас есть нужный опыт и оборудование.
+              </p>
+            </>
           )}
         </div>
 
@@ -126,25 +170,25 @@ export default function About() {
         <div style={{ textAlign: "center", marginBottom: 28 }}>
           <div
             style={{
-              fontSize: "0.8rem",
+              fontSize: "0.78rem",
               fontWeight: 600,
-              color: "#3b82f6",
+              color: "#b5702a",
               textTransform: "uppercase",
-              letterSpacing: "0.08em",
+              letterSpacing: "0.1em",
               marginBottom: 8,
             }}
           >
-            Что нас отличает
+            Наши принципы
           </div>
           <h2
             style={{
-              fontSize: "1.75rem",
+              fontSize: "1.8rem",
               fontWeight: 800,
-              color: "#0f172a",
+              color: "#1a1208",
               letterSpacing: "-0.02em",
             }}
           >
-            Наши ценности
+            Почему выбирают нас
           </h2>
         </div>
 
@@ -153,6 +197,7 @@ export default function About() {
             display: "grid",
             gridTemplateColumns: "repeat(2, 1fr)",
             gap: 16,
+            marginBottom: 72,
           }}
           className="values-grid"
         >
@@ -185,7 +230,7 @@ export default function About() {
                 <h3
                   style={{
                     fontWeight: 700,
-                    color: "#0f172a",
+                    color: "#1a1208",
                     marginBottom: 6,
                     fontSize: "0.95rem",
                   }}
@@ -194,7 +239,7 @@ export default function About() {
                 </h3>
                 <p
                   style={{
-                    color: "#64748b",
+                    color: "#7a6a56",
                     fontSize: "0.875rem",
                     lineHeight: 1.65,
                   }}
@@ -207,9 +252,145 @@ export default function About() {
         </div>
       </div>
 
+      {/* Pricing */}
+      <div style={{ background: "#f5f0e8", padding: "64px 0" }}>
+        <div className="wrap">
+          <div style={{ textAlign: "center", marginBottom: 40 }}>
+            <div
+              style={{
+                fontSize: "0.78rem",
+                fontWeight: 600,
+                color: "#b5702a",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                marginBottom: 8,
+              }}
+            >
+              Прайс-лист
+            </div>
+            <h2
+              style={{
+                fontSize: "1.8rem",
+                fontWeight: 800,
+                color: "#1a1208",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Пакеты съёмки
+            </h2>
+            <p style={{ color: "#7a6a56", fontSize: "0.9rem", marginTop: 8 }}>
+              Индивидуальный расчёт для свадеб и корпоративных съёмок
+            </p>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 20,
+              alignItems: "start",
+            }}
+            className="pricing-grid"
+          >
+            {packages.map(({ name, duration, photos, price, features, accent }) => (
+              <div
+                key={name}
+                className="card"
+                style={{
+                  padding: "32px 28px",
+                  background: accent ? "#1a1208" : "#fff",
+                  border: accent ? "none" : "1px solid #ede9e2",
+                  transform: accent ? "scale(1.03)" : "none",
+                  position: "relative",
+                }}
+              >
+                {accent && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: -10,
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      background: "#b5702a",
+                      color: "#fff",
+                      fontSize: "0.72rem",
+                      fontWeight: 700,
+                      padding: "4px 14px",
+                      borderRadius: 999,
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    Популярный
+                  </div>
+                )}
+                <div style={{ marginBottom: 20 }}>
+                  <div
+                    style={{
+                      fontSize: "0.78rem",
+                      fontWeight: 600,
+                      color: accent ? "#b5702a" : "#9a8a76",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.08em",
+                      marginBottom: 6,
+                    }}
+                  >
+                    {name}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "1.8rem",
+                      fontWeight: 800,
+                      color: accent ? "#f5efe6" : "#1a1208",
+                      letterSpacing: "-0.02em",
+                    }}
+                  >
+                    {price}
+                  </div>
+                  <div style={{ fontSize: "0.82rem", color: accent ? "#7a6a56" : "#9a8a76", marginTop: 4 }}>
+                    {duration} · {photos}
+                  </div>
+                </div>
+                <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
+                  {features.map((f) => (
+                    <li key={f} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <CheckCircle size={15} color="#b5702a" style={{ flexShrink: 0 }} />
+                      <span style={{ fontSize: "0.875rem", color: accent ? "rgba(245,239,230,0.7)" : "#6b5c4a" }}>
+                        {f}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  to="/contacts"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 6,
+                    padding: "11px",
+                    borderRadius: 10,
+                    fontWeight: 600,
+                    fontSize: "0.875rem",
+                    background: accent ? "#b5702a" : "transparent",
+                    color: accent ? "#fff" : "#b5702a",
+                    border: accent ? "none" : "1.5px solid #b5702a",
+                  }}
+                >
+                  Записаться <ArrowRight size={14} />
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <style>{`
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
           .values-grid { grid-template-columns: 1fr !important; }
+          .pricing-grid { grid-template-columns: 1fr !important; }
+          .pricing-grid > div { transform: none !important; }
         }
       `}</style>
     </div>
