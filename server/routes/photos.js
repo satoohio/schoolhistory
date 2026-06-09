@@ -154,23 +154,32 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
 // ── PATCH /api/photos/:id — edit meta + visibility ──────────────────────────
 router.patch('/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const { title, description, category_id, is_featured, is_visible } = req.body
+    const allowed = ['title', 'description', 'category_id', 'is_featured', 'is_visible']
+    const fields = []
+    const values = []
+
+    for (const key of allowed) {
+      if (req.body[key] !== undefined) {
+        values.push(
+          key === 'category_id'
+            ? (req.body[key] ? parseInt(req.body[key]) : null)
+            : req.body[key]
+        )
+        fields.push(`${key}=$${values.length}`)
+      }
+    }
+
+    if (fields.length === 0) return res.status(400).json({ error: 'Нет полей для обновления' })
+
+    values.push(req.params.id)
     const result = await pool.query(
-      `UPDATE photos
-       SET title=$1, description=$2, category_id=$3, is_featured=$4, is_visible=$5
-       WHERE id=$6 RETURNING *`,
-      [
-        title,
-        description,
-        category_id ? parseInt(category_id) : null,
-        is_featured,
-        is_visible !== undefined ? is_visible : true,
-        req.params.id,
-      ]
+      `UPDATE photos SET ${fields.join(', ')} WHERE id=$${values.length} RETURNING *`,
+      values
     )
     if (result.rows.length === 0) return res.status(404).json({ error: 'Фото не найдено' })
     res.json(result.rows[0])
   } catch (err) {
+    console.error('PATCH photo error:', err.message)
     res.status(500).json({ error: 'Ошибка сервера' })
   }
 })
