@@ -223,21 +223,36 @@ export default function Admin() {
   }, [isAdmin]);
 
   async function loadAll() {
-    const [statsR, photosR, usersR, catsR] = await Promise.all([
-      authFetch("/api/admin/stats").then((r) => r.json()),
-      authFetch("/api/photos?limit=200&admin=true").then((r) => r.json()),
-      authFetch("/api/admin/users").then((r) => r.json()),
-      authFetch("/api/photos/categories").then((r) => r.json()),
-    ]);
-    setStats(statsR);
-    setPhotos(Array.isArray(photosR) ? photosR : []);
-    setUsers(Array.isArray(usersR) ? usersR : []);
-    setCategories(Array.isArray(catsR) ? catsR : []);
-    const [aboutR, contactsR] = await Promise.all([
-      fetch("/api/pages/about").then((r) => (r.ok ? r.json() : null)),
-      fetch("/api/pages/contacts").then((r) => (r.ok ? r.json() : null)),
-    ]);
-    setEditPage({ about: aboutR, contacts: contactsR });
+    try {
+      const [statsR, photosR, usersR, catsR] = await Promise.all([
+        authFetch("/api/admin/stats").then((r) => r.json()),
+        authFetch("/api/photos?limit=200&admin=true").then((r) => r.json()),
+        authFetch("/api/admin/users").then((r) => r.json()),
+        authFetch("/api/photos/categories").then((r) => r.json()),
+      ]);
+      setStats(statsR);
+      setPhotos(Array.isArray(photosR) ? photosR : []);
+      setUsers(Array.isArray(usersR) ? usersR : []);
+      setCategories(Array.isArray(catsR) ? catsR : []);
+    } catch (err) {
+      console.error("loadAll admin data error:", err.message);
+    }
+    try {
+      const [aboutR, contactsR] = await Promise.all([
+        fetch("/api/pages/about").then((r) => (r.ok ? r.json() : null)),
+        fetch("/api/pages/contacts").then((r) => (r.ok ? r.json() : null)),
+      ]);
+      setEditPage({
+        about: aboutR || { slug: "about", title: "О студии LUMINAS", content: "" },
+        contacts: contactsR || { slug: "contacts", title: "Контакты", content: "{}" },
+      });
+    } catch (err) {
+      console.error("loadAll pages error:", err.message);
+      setEditPage({
+        about: { slug: "about", title: "О студии LUMINAS", content: "" },
+        contacts: { slug: "contacts", title: "Контакты", content: "{}" },
+      });
+    }
   }
 
   function showMsg(text, type = "success") {
@@ -428,13 +443,22 @@ export default function Admin() {
   // ── Pages ──────────────────────────────────────────────────────────────
   async function savePage(slug) {
     const p = editPage[slug];
-    const res = await authFetch(`/api/pages/${slug}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: p.title, content: p.content }),
-    });
-    if (res.ok) showMsg("Сохранено!");
-    else showMsg("Ошибка сохранения", "error");
+    if (!p) return showMsg("Данные страницы не загружены", "error");
+    if (!p.title?.trim()) return showMsg("Введите заголовок страницы", "error");
+    try {
+      const res = await authFetch(`/api/pages/${slug}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: p.title, content: p.content }),
+      });
+      if (res.ok) showMsg("Страница сохранена!");
+      else {
+        const err = await res.json().catch(() => ({}));
+        showMsg(err.error || "Ошибка сохранения", "error");
+      }
+    } catch (err) {
+      showMsg("Ошибка соединения с сервером", "error");
+    }
   }
 
   if (!isAdmin) return null;
