@@ -212,6 +212,7 @@ export default function Admin() {
   const [editPage, setEditPage] = useState({ about: null, contacts: null });
   const [userSearch, setUserSearch] = useState("");
   const [photoFilter, setPhotoFilter] = useState("");
+  const [photoView, setPhotoView] = useState("list");
   const [editPhotoModal, setEditPhotoModal] = useState(null);
   const [confirmModal, setConfirmModal] = useState(null);
   const fileRef = useRef();
@@ -274,11 +275,18 @@ export default function Admin() {
 
   // ── Photos ─────────────────────────────────────────────────────────────
   async function deletePhoto(id) {
-    const res = await authFetch(`/api/photos/${id}`, { method: "DELETE" });
-    if (res.ok) {
-      setPhotos((prev) => prev.filter((p) => p.id !== id));
-      setStats((s) => s ? { ...s, photos: s.photos - 1 } : s);
-      showMsg("Фото удалено");
+    try {
+      const res = await authFetch(`/api/photos/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setPhotos((prev) => prev.filter((p) => p.id !== id));
+        setStats((s) => s ? { ...s, photos: s.photos - 1 } : s);
+        showMsg("Фото удалено");
+      } else {
+        const d = await res.json().catch(() => ({}));
+        showMsg(d.error || "Ошибка при удалении", "error");
+      }
+    } catch (e) {
+      showMsg("Ошибка соединения с сервером", "error");
     }
     setConfirmModal(null);
   }
@@ -529,14 +537,15 @@ export default function Admin() {
         {/* ══ PHOTOS tab ══════════════════════════════════════════ */}
         {tab === "photos" && (
           <div style={S.card}>
+            {/* Toolbar */}
             <div style={{
-              padding: "16px 20px", borderBottom: `1px solid ${C.borderLight}`,
+              padding: "14px 20px", borderBottom: `1px solid ${C.borderLight}`,
               display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap",
             }}>
               <h2 style={{ fontWeight: 700, color: C.text, fontSize: "0.95rem" }}>
                 Все фотографии ({filteredPhotos.length})
               </h2>
-              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                 <select
                   value={photoFilter}
                   onChange={(e) => setPhotoFilter(e.target.value)}
@@ -547,11 +556,26 @@ export default function Admin() {
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
                 </select>
+                {/* View toggle */}
+                <div style={{ display: "flex", background: C.bg, borderRadius: 8, padding: 2, border: `1px solid ${C.border}` }}>
+                  {[["list", Images], ["grid", LayoutGrid]].map(([v, Icon]) => (
+                    <button key={v} onClick={() => setPhotoView(v)} style={{
+                      width: 30, height: 30, borderRadius: 6, border: "none", cursor: "pointer",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      background: photoView === v ? C.gold : "transparent",
+                      color: photoView === v ? "#fff" : C.textMuted,
+                      transition: "all 0.15s",
+                    }}>
+                      <Icon size={14} />
+                    </button>
+                  ))}
+                </div>
                 <button onClick={() => setTab("upload")} style={{ ...S.btnPrimary, padding: "7px 14px", fontSize: "0.8rem" }}>
                   <Plus size={14} /> Добавить
                 </button>
               </div>
             </div>
+
             {filteredPhotos.length === 0 ? (
               <div style={{ padding: "60px 20px", textAlign: "center" }}>
                 <Camera size={40} style={{ color: C.border, margin: "0 auto 12px" }} />
@@ -560,80 +584,203 @@ export default function Admin() {
                   Загрузите первые работы студии
                 </p>
               </div>
+            ) : photoView === "list" ? (
+              /* ── LIST VIEW ── */
+              <div>
+                {filteredPhotos.map((photo, i) => (
+                  <div key={photo.id} style={{
+                    display: "flex", alignItems: "center", gap: 14,
+                    padding: "12px 20px",
+                    borderBottom: i < filteredPhotos.length - 1 ? `1px solid ${C.borderLight}` : "none",
+                    background: !photo.is_visible ? "#fafafa" : "#fff",
+                    transition: "background 0.15s",
+                  }}
+                    onMouseEnter={(e) => { if (photo.is_visible) e.currentTarget.style.background = C.goldLight; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = !photo.is_visible ? "#fafafa" : "#fff"; }}
+                  >
+                    {/* Thumbnail */}
+                    <div style={{
+                      width: 56, height: 56, borderRadius: 8, overflow: "hidden",
+                      flexShrink: 0, background: C.borderLight, position: "relative",
+                      opacity: photo.is_visible ? 1 : 0.5,
+                    }}>
+                      <img src={photo.url} alt={photo.title}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    </div>
+
+                    {/* Info */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                        <span style={{
+                          fontWeight: 600, fontSize: "0.9rem", color: photo.is_visible ? C.text : C.textMuted,
+                          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                        }}>
+                          {photo.title}
+                        </span>
+                        {photo.is_featured && (
+                          <span style={{
+                            background: "#fdf5ec", color: C.gold, border: `1px solid ${C.goldBorder}`,
+                            borderRadius: 6, fontSize: "0.65rem", fontWeight: 700,
+                            padding: "1px 6px", letterSpacing: "0.04em",
+                          }}>★ Главная</span>
+                        )}
+                        {!photo.is_visible && (
+                          <span style={{
+                            background: "#f3f4f6", color: "#6b7280", border: "1px solid #e5e7eb",
+                            borderRadius: 6, fontSize: "0.65rem", fontWeight: 700, padding: "1px 6px",
+                          }}>Скрыто</span>
+                        )}
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 3 }}>
+                        {photo.category_name && (
+                          <span style={{ fontSize: "0.75rem", color: C.textMuted }}>
+                            {photo.category_name}
+                          </span>
+                        )}
+                        {photo.description && (
+                          <span style={{
+                            fontSize: "0.75rem", color: C.textMuted,
+                            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 260,
+                          }}>
+                            {photo.description}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Actions — always visible */}
+                    <div style={{ display: "flex", gap: 6, flexShrink: 0, alignItems: "center" }}>
+                      <button
+                        onClick={() => toggleFeatured(photo)}
+                        title={photo.is_featured ? "Убрать с главной" : "На главную"}
+                        style={{
+                          width: 32, height: 32, borderRadius: 8, border: `1px solid ${C.border}`,
+                          background: photo.is_featured ? "#fdf5ec" : "#fff",
+                          cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                        }}
+                      >
+                        {photo.is_featured
+                          ? <Star size={14} fill="#b5702a" color="#b5702a" />
+                          : <StarOff size={14} color={C.textMuted} />}
+                      </button>
+                      <button
+                        onClick={() => toggleVisibility(photo)}
+                        title={photo.is_visible ? "Скрыть из галереи" : "Показать в галерее"}
+                        style={{
+                          width: 32, height: 32, borderRadius: 8, border: `1px solid ${C.border}`,
+                          background: photo.is_visible ? "#ecfdf5" : "#f3f4f6",
+                          cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                        }}
+                      >
+                        {photo.is_visible
+                          ? <Eye size={14} color="#15803d" />
+                          : <EyeOff size={14} color="#6b7280" />}
+                      </button>
+                      <button
+                        onClick={() => setEditPhotoModal({ ...photo })}
+                        title="Редактировать"
+                        style={{
+                          width: 32, height: 32, borderRadius: 8, border: `1px solid ${C.goldBorder}`,
+                          background: C.goldLight, cursor: "pointer",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}
+                      >
+                        <Edit2 size={14} color={C.gold} />
+                      </button>
+                      <button
+                        onClick={() => setConfirmModal({ type: "photo", id: photo.id, name: photo.title })}
+                        title="Удалить"
+                        style={{
+                          width: 32, height: 32, borderRadius: 8, border: "1px solid #fecaca",
+                          background: "#fef2f2", cursor: "pointer",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}
+                      >
+                        <Trash2 size={14} color="#dc2626" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : (
+              /* ── GRID VIEW ── */
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, padding: 20 }}
                 className="admin-photo-grid">
                 {filteredPhotos.map((photo) => (
                   <div key={photo.id} style={{
-                    position: "relative", borderRadius: 10, overflow: "hidden",
-                    aspectRatio: "1/1", background: C.borderLight,
-                  }} className="admin-photo-item">
-                    <img src={photo.url} alt={photo.title}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                    <div className="admin-photo-hover" style={{
-                      position: "absolute", inset: 0,
-                      background: "linear-gradient(to top, rgba(13,11,8,0.8) 0%, rgba(13,11,8,0.3) 100%)",
-                      display: "flex", flexDirection: "column", justifyContent: "space-between",
-                      padding: 8, opacity: 0, transition: "opacity 0.2s",
-                    }}>
-                      <div style={{ display: "flex", justifyContent: "space-between" }}>
-                        <button onClick={() => toggleFeatured(photo)}
-                          title={photo.is_featured ? "Убрать с главной" : "На главную"}
-                          style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(181,112,42,0.6)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          {photo.is_featured
-                            ? <Star size={13} fill="#fbbf24" color="#fbbf24" />
-                            : <StarOff size={13} color="#fff" />}
-                        </button>
-                        <div style={{ display: "flex", gap: 4 }}>
-                          <button onClick={() => toggleVisibility(photo)}
-                            title={photo.is_visible ? "Скрыть из галереи" : "Показать в галерее"}
-                            style={{ width: 28, height: 28, borderRadius: 8, background: photo.is_visible ? "rgba(34,197,94,0.85)" : "rgba(107,114,128,0.85)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            {photo.is_visible ? <Eye size={12} color="#fff" /> : <EyeOff size={12} color="#fff" />}
-                          </button>
-                          <button onClick={() => setEditPhotoModal({ ...photo })}
-                            title="Редактировать"
-                            style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(181,112,42,0.85)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <Edit2 size={12} color="#fff" />
-                          </button>
-                          <button onClick={() => setConfirmModal({ type: "photo", id: photo.id, name: photo.title })}
-                            title="Удалить"
-                            style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(220,38,38,0.85)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <Trash2 size={12} color="#fff" />
-                          </button>
+                    borderRadius: 10, overflow: "hidden", background: C.borderLight,
+                    border: `1px solid ${C.border}`,
+                    opacity: photo.is_visible ? 1 : 0.65,
+                  }}>
+                    {/* Photo */}
+                    <div style={{ position: "relative", aspectRatio: "1/1" }}>
+                      <img src={photo.url} alt={photo.title}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                      {photo.is_featured && (
+                        <div style={{
+                          position: "absolute", top: 6, left: 6,
+                          background: C.gold, borderRadius: "50%",
+                          width: 20, height: 20,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>
+                          <Star size={11} fill="#fff" color="#fff" />
                         </div>
-                      </div>
-                      <p style={{ color: "#fff", fontSize: "0.72rem", fontWeight: 500, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
+                      )}
+                      {!photo.is_visible && (
+                        <div style={{
+                          position: "absolute", top: 6, right: 6,
+                          background: "rgba(0,0,0,0.6)", borderRadius: 6,
+                          padding: "2px 6px", display: "flex", alignItems: "center", gap: 3,
+                        }}>
+                          <EyeOff size={10} color="#fff" />
+                          <span style={{ color: "#fff", fontSize: "0.6rem", fontWeight: 600 }}>Скрыто</span>
+                        </div>
+                      )}
+                    </div>
+                    {/* Title */}
+                    <div style={{ padding: "8px 10px 6px", borderBottom: `1px solid ${C.borderLight}` }}>
+                      <p style={{
+                        fontSize: "0.78rem", fontWeight: 600, color: C.text,
+                        overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis",
+                      }}>
                         {photo.title}
                       </p>
+                      {photo.category_name && (
+                        <p style={{ fontSize: "0.68rem", color: C.textMuted, marginTop: 1 }}>
+                          {photo.category_name}
+                        </p>
+                      )}
                     </div>
-                    {/* Hidden overlay — always visible if photo is hidden */}
-                    {!photo.is_visible && (
-                      <div style={{
-                        position: "absolute", inset: 0,
-                        background: "rgba(0,0,0,0.52)",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        pointerEvents: "none",
-                      }}>
-                        <div style={{
-                          background: "rgba(0,0,0,0.6)", borderRadius: 8,
-                          padding: "4px 8px", display: "flex", alignItems: "center", gap: 5,
-                        }}>
-                          <EyeOff size={13} color="#fff" />
-                          <span style={{ color: "#fff", fontSize: "0.68rem", fontWeight: 600 }}>Скрыто</span>
-                        </div>
-                      </div>
-                    )}
-                    {photo.is_featured && (
-                      <div style={{
-                        position: "absolute", top: 6, left: 6,
-                        background: C.gold, borderRadius: "50%",
-                        width: 20, height: 20,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
-                      }}>
-                        <Star size={11} fill="#fff" color="#fff" />
-                      </div>
-                    )}
+                    {/* Always-visible action strip */}
+                    <div style={{
+                      display: "flex", justifyContent: "space-around", padding: "6px 8px",
+                      background: "#fdfaf7",
+                    }}>
+                      <button onClick={() => toggleFeatured(photo)}
+                        title={photo.is_featured ? "Убрать с главной" : "На главную"}
+                        style={{ width: 28, height: 28, borderRadius: 6, border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {photo.is_featured
+                          ? <Star size={14} fill="#b5702a" color="#b5702a" />
+                          : <StarOff size={14} color={C.textMuted} />}
+                      </button>
+                      <button onClick={() => toggleVisibility(photo)}
+                        title={photo.is_visible ? "Скрыть" : "Показать"}
+                        style={{ width: 28, height: 28, borderRadius: 6, border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {photo.is_visible
+                          ? <Eye size={14} color="#15803d" />
+                          : <EyeOff size={14} color="#6b7280" />}
+                      </button>
+                      <button onClick={() => setEditPhotoModal({ ...photo })}
+                        title="Редактировать"
+                        style={{ width: 28, height: 28, borderRadius: 6, border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <Edit2 size={14} color={C.gold} />
+                      </button>
+                      <button onClick={() => setConfirmModal({ type: "photo", id: photo.id, name: photo.title })}
+                        title="Удалить"
+                        style={{ width: 28, height: 28, borderRadius: 6, border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <Trash2 size={14} color="#dc2626" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
