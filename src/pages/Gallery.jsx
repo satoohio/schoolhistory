@@ -57,7 +57,7 @@ export default function Gallery() {
   useEffect(() => {
     setOffset(0);
     setPhotos([]);
-  }, [activeCategory, search]);
+  }, [activeCategory]);
 
   return (
     <div style={{ paddingTop: 64, minHeight: "100vh" }}>

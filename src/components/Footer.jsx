@@ -86,18 +86,6 @@ export default function Footer() {
               </div>
             )}
 
-            {/* Fallback social icon when no links saved */}
-            {socialLinks.length === 0 && (
-              <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-                <a href="#" style={{
-                  width: 34, height: 34, background: "#1e1810",
-                  border: "1px solid #2e2418", borderRadius: 8,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }}>
-                  <ExternalLink size={15} color="#b5702a" />
-                </a>
-              </div>
-            )}
           </div>
 
           {/* ── Navigation ── */}

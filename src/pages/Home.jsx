@@ -111,7 +111,7 @@ export default function Home() {
         </div>
 
         <div
-          className="wrap"
+          className="wrap hero-grid"
           style={{
             position: "relative",
             zIndex: 1,
@@ -121,7 +121,6 @@ export default function Home() {
             gap: 48,
             alignItems: "center",
           }}
-          className="wrap hero-grid"
         >
           <div>
             <div
